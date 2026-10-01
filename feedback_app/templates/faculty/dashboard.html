@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Faculty dashboard{% endblock %}
+{% block content %}
+<div class="page-heading"><div><div class="eyebrow">Faculty portal</div><h1>Feedback overview</h1><p class="text-secondary mb-0">Feedback is anonymous. Student names and account details are not included.</p></div></div>
+<section class="panel"><h2>Your course results</h2>
+  {% if courses %}<div class="table-responsive"><table class="table align-middle"><thead><tr><th>Course</th><th>Semester</th><th>Responses</th><th>Teaching</th><th>Content</th><th>Punctuality</th><th>Overall</th></tr></thead><tbody>
+  {% for course in courses %}<tr><td><strong>{{ course.course_code }}</strong><br>{{ course.course_name }}</td><td>{{ course.semester }}</td><td>{{ course.response_count }}</td><td>{{ course.teaching_average or '—' }}</td><td>{{ course.content_average or '—' }}</td><td>{{ course.punctuality_average or '—' }}</td><td class="score">{{ course.overall_average or '—' }}</td></tr>{% endfor %}
+  </tbody></table></div>{% else %}<p class="text-secondary mb-0">No courses have been assigned to you yet.</p>{% endif %}
+</section>
+<section class="panel"><h2>Comments</h2>
+  {% if comments %}<div class="comment-list">{% for item in comments %}<article class="comment-item"><div class="small text-secondary">{{ item.course_code }} · {{ item.semester }}</div><p class="mb-0">{{ item.comments }}</p></article>{% endfor %}</div>{% else %}<p class="text-secondary mb-0">No written comments yet.</p>{% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,35 @@
+:root {
+  --ink: #182a32;
+  --muted: #627078;
+  --paper: #f3f5f1;
+  --green: #176b58;
+  --lime: #d3e56c;
+  --line: #dce3df;
+}
+body { background: var(--paper); color: var(--ink); font-family: Georgia, 'Times New Roman', serif; }
+.site-nav { background: var(--ink); border-bottom: 4px solid var(--lime); font-family: Arial, sans-serif; }
+.navbar-brand { font-size: 1rem; font-weight: 700; letter-spacing: .02em; }
+.nav-user, .nav-link { color: #edf4ef; font-size: .9rem; }
+.page-shell { max-width: 1120px; padding-top: 2rem; padding-bottom: 4rem; }
+.page-heading { display: flex; justify-content: space-between; align-items: end; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--line); padding-bottom: 1rem; }
+.page-heading h1 { margin: 0; font-size: clamp(1.7rem, 3vw, 2.5rem); font-weight: 700; }
+.eyebrow { color: var(--green); font: 700 .75rem/1.3 Arial, sans-serif; letter-spacing: .08em; text-transform: uppercase; }
+.panel { background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 1.25rem; margin-bottom: 1.25rem; }
+.panel h2 { font-size: 1.2rem; margin-bottom: 1rem; }
+.table { --bs-table-bg: transparent; font-family: Arial, sans-serif; font-size: .92rem; }
+.table thead th { color: var(--muted); font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; border-bottom-width: 1px; }
+.form-label, .form-control, .form-select, .btn { font-family: Arial, sans-serif; }
+.btn-primary { --bs-btn-bg: var(--green); --bs-btn-border-color: var(--green); --bs-btn-hover-bg: #105242; --bs-btn-hover-border-color: #105242; }
+.rating-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.score { color: var(--green); font: 700 1.4rem Arial, sans-serif; }
+.comment-list { display: grid; gap: .75rem; }
+.comment-item { border-left: 3px solid var(--lime); padding: .5rem .8rem; background: #f7f9f5; }
+.auth-wrap { max-width: 540px; margin: 5vh auto; }
+.auth-wrap .panel { padding: clamp(1.25rem, 4vw, 2.25rem); }
+.flash-stack { margin-bottom: 1rem; }
+@media (max-width: 680px) {
+  .page-heading { align-items: start; flex-direction: column; }
+  .rating-grid { grid-template-columns: 1fr; gap: .5rem; }
+  .navbar .container { align-items: start; }
+  .nav-user { display: none; }
+}

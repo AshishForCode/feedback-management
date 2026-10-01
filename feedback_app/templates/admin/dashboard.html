@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Admin dashboard{% endblock %}
+{% block content %}
+<div class="page-heading"><div><div class="eyebrow">System administration</div><h1>Manage the feedback system</h1></div><a class="btn btn-primary" href="{{ url_for('admin.reports') }}">Open reports</a></div>
+<section class="panel"><h2>Accounts</h2>
+  <form class="row g-2 align-items-end mb-4" method="post" action="{{ url_for('admin.create_user') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="col-md-2"><label class="form-label" for="role">Role</label><select class="form-select" id="role" name="role"><option value="student">Student</option><option value="faculty">Faculty</option></select></div>
+    <div class="col-md-2"><label class="form-label" for="full_name">Full name</label><input class="form-control" id="full_name" name="full_name" required maxlength="100"></div>
+    <div class="col-md-2"><label class="form-label" for="email">Email</label><input class="form-control" id="email" name="email" type="email" required maxlength="254"></div>
+    <div class="col-md-2"><label class="form-label" for="profile_code">ID / number</label><input class="form-control" id="profile_code" name="profile_code" required maxlength="30"></div>
+    <div class="col-md-2"><label class="form-label" for="user_department">Department</label><input class="form-control" id="user_department" name="department" required maxlength="80"></div>
+    <div class="col-md-2"><label class="form-label" for="user_password">Initial password</label><input class="form-control" id="user_password" name="password" type="password" minlength="8" required></div>
+    <div class="col-12"><button class="btn btn-primary" type="submit">Add account</button></div>
+  </form>
+  <div class="table-responsive"><table class="table align-middle"><thead><tr><th>Name</th><th>Role</th><th>Email</th><th>ID</th><th>Department</th><th>Actions</th></tr></thead><tbody>
+    {% for user in users %}<tr><td>{{ user.full_name }}</td><td>{{ user.role|title }}</td><td>{{ user.email }}</td><td>{{ user.profile_code or '—' }}</td><td>{{ user.department or '—' }}</td><td class="text-nowrap">{% if user.role != 'admin' %}<a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin.edit_user', user_id=user.user_id) }}">Edit</a> <form class="d-inline" method="post" action="{{ url_for('admin.delete_user', user_id=user.user_id) }}" onsubmit="return confirm('Delete this account and its related records?')"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-sm btn-outline-danger" type="submit">Delete</button></form>{% else %}<span class="text-secondary">Protected</span>{% endif %}</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+<section class="panel"><h2>Courses</h2>
+  <form class="row g-2 align-items-end mb-3" method="post" action="{{ url_for('admin.create_course') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="col-md-3"><label class="form-label" for="course_code">Course code</label><input class="form-control" id="course_code" name="course_code" maxlength="15" required></div><div class="col-md-4"><label class="form-label" for="course_name">Course name</label><input class="form-control" id="course_name" name="course_name" maxlength="120" required></div><div class="col-md-3"><label class="form-label" for="course_department">Department</label><input class="form-control" id="course_department" name="department" maxlength="80" required></div><div class="col-md-2"><button class="btn btn-primary" type="submit">Add course</button></div>
+  </form>
+  <div class="table-responsive"><table class="table align-middle"><thead><tr><th>Code</th><th>Course</th><th>Department</th><th>Actions</th></tr></thead><tbody>
+    {% for course in courses %}<tr><td>{{ course.course_code }}</td><td>{{ course.course_name }}</td><td>{{ course.department }}</td><td class="text-nowrap"><a class="btn btn-sm btn-outline-primary" href="{{ url_for('admin.edit_course', course_id=course.course_id) }}">Edit</a> <form class="d-inline" method="post" action="{{ url_for('admin.delete_course', course_id=course.course_id) }}" onsubmit="return confirm('Delete this course, enrollments, assignments, and linked feedback?')"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-sm btn-outline-danger" type="submit">Delete</button></form></td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+<section class="panel"><h2>Faculty assignments</h2>
+  <form class="row g-2 align-items-end mb-3" method="post" action="{{ url_for('admin.create_assignment') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="col-md-4"><label class="form-label" for="faculty_id">Faculty</label><select class="form-select" id="faculty_id" name="faculty_id" required><option value="">Select faculty</option>{% for person in faculty_members %}<option value="{{ person.faculty_id }}">{{ person.full_name }} ({{ person.employee_number }})</option>{% endfor %}</select></div><div class="col-md-3"><label class="form-label" for="assignment_course">Course</label><select class="form-select" id="assignment_course" name="course_id" required><option value="">Select course</option>{% for course in courses %}<option value="{{ course.course_id }}">{{ course.course_code }} · {{ course.course_name }}</option>{% endfor %}</select></div><div class="col-md-3"><label class="form-label" for="assignment_semester">Semester</label><input class="form-control" id="assignment_semester" name="semester" placeholder="2026-Fall" pattern="[0-9]{4}-(Spring|Summer|Fall)" required></div><div class="col-md-2"><button class="btn btn-primary" type="submit">Assign</button></div>
+  </form>
+  <div class="table-responsive"><table class="table align-middle"><thead><tr><th>Course</th><th>Faculty</th><th>Semester</th><th></th></tr></thead><tbody>{% for item in assignments %}<tr><td>{{ item.course_code }} · {{ item.course_name }}</td><td>{{ item.faculty_name }}</td><td>{{ item.semester }}</td><td><form method="post" action="{{ url_for('admin.delete_assignment', assignment_id=item.assignment_id) }}" onsubmit="return confirm('Delete assignment and its feedback?')"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-sm btn-outline-danger" type="submit">Remove</button></form></td></tr>{% endfor %}</tbody></table></div>
+</section>
+<section class="panel"><h2>Student course enrollment</h2>
+  <form class="row g-2 align-items-end" method="post" action="{{ url_for('admin.enroll_student') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="col-md-4"><label class="form-label" for="student_id">Student</label><select class="form-select" id="student_id" name="student_id" required><option value="">Select student</option>{% for person in students %}<option value="{{ person.student_id }}">{{ person.full_name }} ({{ person.student_number }})</option>{% endfor %}</select></div><div class="col-md-4"><label class="form-label" for="enrollment_course">Course</label><select class="form-select" id="enrollment_course" name="course_id" required><option value="">Select course</option>{% for course in courses %}<option value="{{ course.course_id }}">{{ course.course_code }} · {{ course.course_name }}</option>{% endfor %}</select></div><div class="col-md-2"><label class="form-label" for="enrollment_semester">Semester</label><input class="form-control" id="enrollment_semester" name="semester" placeholder="2026-Fall" pattern="[0-9]{4}-(Spring|Summer|Fall)" required></div><div class="col-md-2"><button class="btn btn-primary" type="submit">Enroll</button></div>
+  </form>
+</section>
+{% endblock %}

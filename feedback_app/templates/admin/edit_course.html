@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}Edit course{% endblock %}
+{% block content %}
+<div class="page-heading"><div><div class="eyebrow">Administration · Courses</div><h1>Edit course</h1></div><a class="btn btn-outline-secondary" href="{{ url_for('admin.dashboard') }}">Back</a></div>
+<section class="panel"><form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="mb-3"><label class="form-label" for="course_code">Course code</label><input class="form-control" id="course_code" name="course_code" value="{{ course.course_code }}" maxlength="15" required></div>
+  <div class="mb-3"><label class="form-label" for="course_name">Course name</label><input class="form-control" id="course_name" name="course_name" value="{{ course.course_name }}" maxlength="120" required></div>
+  <div class="mb-3"><label class="form-label" for="department">Department</label><input class="form-control" id="department" name="department" value="{{ course.department }}" maxlength="80" required></div>
+  <button class="btn btn-primary" type="submit">Save course</button>
+</form></section>
+{% endblock %}

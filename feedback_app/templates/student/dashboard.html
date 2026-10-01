@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Student dashboard{% endblock %}
+{% block content %}
+<div class="page-heading"><div><div class="eyebrow">Student portal</div><h1>Your courses & feedback</h1></div></div>
+<section class="panel"><h2>Assigned courses</h2>
+  {% if courses %}<div class="table-responsive"><table class="table align-middle"><thead><tr><th>Course</th><th>Faculty</th><th>Semester</th><th>Feedback</th><th></th></tr></thead><tbody>
+  {% for course in courses %}<tr><td><strong>{{ course.course_code }}</strong><br>{{ course.course_name }}</td><td>{{ course.faculty_name or 'Not assigned' }}</td><td>{{ course.semester }}</td><td>{% if course.feedback_id %}<span class="badge text-bg-success">Submitted</span>{% else %}<span class="badge text-bg-secondary">Not submitted</span>{% endif %}</td><td>{% if course.assignment_id %}<a class="btn btn-sm btn-outline-primary" href="{{ url_for('student.feedback_form', assignment_id=course.assignment_id) }}">{% if course.feedback_id %}Review / edit{% else %}Give feedback{% endif %}</a>{% endif %}</td></tr>{% endfor %}
+  </tbody></table></div>{% else %}<p class="text-secondary mb-0">No course enrollments yet. Contact your administrator.</p>{% endif %}
+</section>
+<section class="panel"><h2>Feedback history</h2>
+  {% if history %}<div class="table-responsive"><table class="table align-middle"><thead><tr><th>Course</th><th>Semester</th><th>Ratings</th><th>Submitted</th><th></th></tr></thead><tbody>
+  {% for item in history %}<tr><td><strong>{{ item.course_code }}</strong> · {{ item.course_name }}</td><td>{{ item.semester }}</td><td>{{ item.teaching_quality }} / {{ item.course_content }} / {{ item.punctuality }}</td><td>{{ item.created_at }}</td><td><form method="post" action="{{ url_for('student.delete_feedback', feedback_id=item.feedback_id) }}" onsubmit="return confirm('Delete this feedback?')"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-sm btn-outline-danger" type="submit">Delete</button></form></td></tr>{% endfor %}
+  </tbody></table></div>{% else %}<p class="text-secondary mb-0">Your submissions will appear here.</p>{% endif %}
+</section>
+{% endblock %}
