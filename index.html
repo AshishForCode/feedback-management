@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Feedback Management System | Live Interactive Showcase</title>
+  <meta name="description" content="A role-based, anonymous course evaluation system built with Flask, SQLite, and 3NF relational architecture. Features interactive browser simulation, architecture explorer, and deployment guides.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --bg-card: rgba(17, 24, 39, 0.78);
+      --bg-card-hover: rgba(26, 36, 56, 0.85);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-focus: rgba(16, 185, 129, 0.5);
+      --primary: #10b981;
+      --primary-glow: rgba(16, 185, 129, 0.25);
+      --primary-dark: #059669;
+      --accent: #6366f1;
+      --accent-glow: rgba(99, 102, 241, 0.25);
+      --cyan: #06b6d4;
+      --amber: #f59e0b;
+      --rose: #ef4444;
+      --text: #f9fafb;
+      --text-muted: #9ca3af;
+      --text-dim: #6b7280;
+      --radius: 14px;
+      --radius-sm: 8px;
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(99, 102, 241, 0.14) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(6, 182, 212, 0.08) 0px, transparent 60%);
+      background-attachment: fixed;
+      color: var(--text);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Navigation */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      background: rgba(9, 13, 22, 0.82);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.9rem 0;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.2rem;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      list-style: none;
+    }
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.92rem;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+    .nav-link:hover { color: var(--text); }
+    .nav-btn {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(99, 102, 241, 0.2));
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+    .nav-btn:hover {
+      background: var(--primary);
+      color: #052e16;
+      box-shadow: 0 0 20px var(--primary-glow);
+      border-color: var(--primary);
+    }
+
+    /* Hero */
+    .hero {
+      padding: 4.5rem 0 3rem;
+      text-align: center;
+    }
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 0.35rem 0.9rem;
+      border-radius: 9999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #34d399;
+      margin-bottom: 1.25rem;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 8px var(--primary);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+    }
+    .hero-title {
+      font-size: clamp(2.3rem, 5vw, 3.8rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+      background: linear-gradient(135deg, #ffffff 40%, #9ca3af 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-subtitle {
+      max-width: 740px;
+      margin: 0 auto 2rem;
+      color: var(--text-muted);
+      font-size: 1.12rem;
+      line-height: 1.7;
+    }
+    .hero-tags {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 2.5rem;
+    }
+    .tag {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      padding: 0.3rem 0.8rem;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: #d1d5db;
+    }
+    .hero-actions {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #022c22;
+      font-weight: 700;
+      padding: 0.85rem 1.6rem;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 0 30px var(--primary-glow);
+      transition: all 0.2s ease;
+      border: none;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 40px rgba(16, 185, 129, 0.4);
+    }
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-weight: 600;
+      padding: 0.85rem 1.5rem;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Tabs Bar */
+    .section-tabs {
+      display: flex;
+      justify-content: center;
+      border-bottom: 1px solid var(--border);
+      margin: 2.5rem 0 2rem;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-muted);
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 0.8rem 1.4rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    /* Main Simulator Container */
+    .simulator-box {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+      overflow: hidden;
+      margin-bottom: 3.5rem;
+    }
+
+    .sim-header {
+      background: rgba(13, 19, 33, 0.9);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .role-switcher {
+      display: flex;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.25rem;
+      gap: 0.25rem;
+    }
+    .role-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.45rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+    }
+    .role-btn.active {
+      background: var(--primary);
+      color: #032e1f;
+      box-shadow: 0 2px 10px var(--primary-glow);
+    }
+    .role-btn:hover:not(.active) { color: var(--text); background: rgba(255, 255, 255, 0.05); }
+
+    .sim-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .sim-user-tag {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: #93c5fd;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      padding: 0.3rem 0.65rem;
+      border-radius: 6px;
+    }
+    .btn-reset {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #f87171;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .btn-reset:hover {
+      background: var(--rose);
+      color: white;
+    }
+
+    .sim-body {
+      padding: 2rem;
+    }
+
+    /* Student View */
+    .view-container { display: none; }
+    .view-container.active { display: block; animation: fadeIn 0.25s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .banner-card {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(99, 102, 241, 0.08));
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: var(--radius-sm);
+      padding: 1.25rem;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .banner-card h3 { font-size: 1.15rem; color: #fff; margin-bottom: 0.25rem; }
+    .banner-card p { font-size: 0.88rem; color: var(--text-muted); }
+
+    .grid-courses {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2.5rem;
+    }
+    .course-card {
+      background: rgba(13, 20, 36, 0.7);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1.25rem;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .course-card:hover {
+      border-color: rgba(16, 185, 129, 0.35);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+    .course-code {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      display: inline-block;
+      margin-bottom: 0.5rem;
+    }
+    .course-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.3rem;
+    }
+    .course-faculty {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+    .course-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 0.8rem;
+      border-top: 1px solid var(--border);
+    }
+    .status-badge {
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.25rem 0.6rem;
+      border-radius: 9999px;
+    }
+    .status-badge.pending {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    .status-badge.submitted {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* Modal Form / Feedback Submissions */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 1rem;
+    }
+    .modal-overlay.active { display: flex; animation: fadeIn 0.2s ease; }
+    .modal-card {
+      background: #0d1527;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 600px;
+      padding: 1.8rem;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    .modal-header h3 { font-size: 1.25rem; font-weight: 700; color: #fff; }
+    .btn-close {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.4rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .btn-close:hover { color: #fff; }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+    .form-label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: #e5e7eb;
+    }
+    .rating-row {
+      display: flex;
+      gap: 0.6rem;
+      margin-top: 0.35rem;
+    }
+    .rating-opt {
+      flex: 1;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      padding: 0.6rem;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+      color: var(--text-muted);
+    }
+    .rating-opt:hover {
+      border-color: rgba(16, 185, 129, 0.4);
+      color: #fff;
+    }
+    .rating-opt.selected {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #032e1f;
+      box-shadow: 0 0 15px var(--primary-glow);
+    }
+    .form-textarea {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      padding: 0.8rem;
+      font-family: inherit;
+      font-size: 0.9rem;
+      resize: vertical;
+      min-height: 90px;
+    }
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 15px var(--primary-glow);
+    }
+    .anonymity-note {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(6, 182, 212, 0.08);
+      border: 1px solid rgba(6, 182, 212, 0.2);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem;
+      font-size: 0.8rem;
+      color: #67e8f9;
+      margin-bottom: 1.25rem;
+    }
+
+    /* History table */
+    .history-section h4 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      color: #fff;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      text-align: left;
+    }
+    th {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 0.8rem 1rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: #e5e7eb;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+    /* Faculty View */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.2rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: rgba(13, 20, 36, 0.7);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.4rem;
+    }
+    .stat-val {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: baseline;
+      gap: 0.4rem;
+    }
+    .stat-val small { font-size: 0.9rem; color: var(--text-dim); font-weight: 500; }
+
+    .comment-card {
+      background: rgba(13, 20, 36, 0.6);
+      border-left: 3px solid var(--primary);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+      border-top: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .comment-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+    .comment-text {
+      font-size: 0.92rem;
+      color: #e5e7eb;
+      font-style: italic;
+    }
+
+    /* Admin View */
+    .admin-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    /* Architecture Section */
+    .arch-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    .arch-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+    }
+    .arch-card h4 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .arch-card p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+    .code-block {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: #a7f3d0;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    /* Viva Q&A Accordion */
+    .viva-list {
+      display: grid;
+      gap: 0.8rem;
+      margin-bottom: 3rem;
+    }
+    .viva-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+    .viva-question {
+      padding: 1rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      color: #fff;
+      cursor: pointer;
+      user-select: none;
+    }
+    .viva-question:hover { background: rgba(255, 255, 255, 0.02); }
+    .viva-answer {
+      display: none;
+      padding: 0 1.25rem 1.25rem;
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
+      padding-top: 1rem;
+    }
+    .viva-item.open .viva-answer { display: block; }
+    .viva-item.open .viva-question { color: var(--primary); }
+
+    /* Toast notification */
+    .toast-box {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #064e3b;
+      border: 1px solid #10b981;
+      color: #ecfdf5;
+      padding: 0.9rem 1.4rem;
+      border-radius: var(--radius-sm);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+      font-size: 0.9rem;
+      font-weight: 600;
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      gap: 0.6rem;
+      animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 3rem 0;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.88rem;
+    }
+
+    @media (max-width: 768px) {
+      .hero-title { font-size: 2.2rem; }
+      .sim-body { padding: 1.25rem; }
+      .nav-links { display: none; }
+      .rating-row { flex-wrap: wrap; }
+      .rating-opt { min-width: 45px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a href="#" class="brand">
+        <div class="brand-icon">🎓</div>
+        <span>Campus / Feedback</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#demo" class="nav-link">Live Demo</a></li>
+        <li><a href="#architecture" class="nav-link">Architecture & Schema</a></li>
+        <li><a href="#viva" class="nav-link">Viva Q&A</a></li>
+        <li><a href="#deploy" class="nav-link">Deploy Guide</a></li>
+      </ul>
+      <a href="https://github.com/AshishForCode/feedback-management" target="_blank" rel="noopener" class="nav-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        <span>GitHub Repo</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero">
+    <div class="container">
+      <div class="badge-pill">
+        <span class="status-dot"></span>
+        <span>Interactive Live Preview & Documentation</span>
+      </div>
+      <h1 class="hero-title">Student Feedback Management System</h1>
+      <p class="hero-subtitle">
+        A coursework-ready, anonymous course feedback platform built with Flask, SQLite, and 3NF normalization.
+        Explore the live interactive simulation below without installing anything, or run the native Python backend.
+      </p>
+      <div class="hero-tags">
+        <span class="tag">Python 3.11+</span>
+        <span class="tag">Flask 3.x</span>
+        <span class="tag">SQLite3</span>
+        <span class="tag">Flask-Login</span>
+        <span class="tag">Flask-WTF CSRF</span>
+        <span class="tag">3NF Normalized</span>
+        <span class="tag">Strict Anonymity</span>
+      </div>
+      <div class="hero-actions">
+        <a href="#demo" class="btn-primary">
+          <span>⚡ Launch Live Simulator</span>
+        </a>
+        <a href="#deploy" class="btn-secondary">
+          <span>🚀 Deploy Python Backend</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Section Tabs -->
+  <div class="container" id="demo">
+    <div class="section-tabs">
+      <button class="tab-btn active" onclick="switchMainTab('demo')">🖥️ Interactive App Demo</button>
+      <button class="tab-btn" onclick="switchMainTab('architecture')">🏛️ Schema & ER Diagram</button>
+      <button class="tab-btn" onclick="switchMainTab('viva')">💡 Viva / Interview Prep</button>
+      <button class="tab-btn" onclick="switchMainTab('deploy')">☁️ Run & Deploy</button>
+    </div>
+
+    <!-- Simulator Box -->
+    <div id="tab-demo" class="simulator-box">
+      <div class="sim-header">
+        <div class="role-switcher">
+          <span style="font-size:0.75rem; color:var(--text-dim); text-transform:uppercase; font-weight:700; padding:0 0.4rem;">Role:</span>
+          <button class="role-btn active" id="btn-role-student" onclick="setRole('student')">🎓 Student</button>
+          <button class="role-btn" id="btn-role-faculty" onclick="setRole('faculty')">👨‍🏫 Faculty</button>
+          <button class="role-btn" id="btn-role-admin" onclick="setRole('admin')">🛡️ Admin</button>
+        </div>
+        <div class="sim-meta">
+          <span class="sim-user-tag" id="current-user-tag">student@feedback.local (John Doe)</span>
+          <button class="btn-reset" onclick="resetDemoData()" title="Reset local database simulation">Reset Demo Data</button>
+        </div>
+      </div>
+
+      <div class="sim-body">
+        
+        <!-- STUDENT VIEW -->
+        <div id="view-student" class="view-container active">
+          <div class="banner-card">
+            <div>
+              <h3>Welcome, John Doe (STU2024001)</h3>
+              <p>You are viewing enrolled courses for <strong>2026-Fall</strong>. Your feedback is strictly anonymous to instructors.</p>
+            </div>
+            <div class="badge-pill" style="margin:0;">
+              <span>Semester: 2026-Fall</span>
+            </div>
+          </div>
+
+          <h4 style="margin-bottom: 1rem; color: #fff;">My Enrolled Courses</h4>
+          <div class="grid-courses" id="student-courses-grid">
+            <!-- Rendered by JS -->
+          </div>
+
+          <div class="history-section">
+            <h4>My Evaluation History & Edit Window</h4>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Course</th>
+                    <th>Scores (Content / Teaching / Overall)</th>
+                    <th>Comments</th>
+                    <th>Submitted At</th>
+                    <th>24h Window</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="student-history-body">
+                  <!-- Rendered by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- FACULTY VIEW -->
+        <div id="view-faculty" class="view-container">
+          <div class="banner-card">
+            <div>
+              <h3>Faculty Dashboard: Dr. Alan Turing</h3>
+              <p>Department of Computer Science · Feedback queries only calculate aggregate scores; student identities are never selected.</p>
+            </div>
+            <div class="badge-pill" style="margin:0; background:rgba(99,102,241,0.15); color:#a5b4fc; border-color:rgba(99,102,241,0.3);">
+              <span>🔒 Zero PII Exposed</span>
+            </div>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-label">Average Teaching Score</div>
+              <div class="stat-val" id="faculty-stat-teaching">4.7 <small>/ 5.0</small></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Course Content Score</div>
+              <div class="stat-val" id="faculty-stat-content">4.8 <small>/ 5.0</small></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Overall Experience</div>
+              <div class="stat-val" id="faculty-stat-overall">4.8 <small>/ 5.0</small></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Total Submissions</div>
+              <div class="stat-val" id="faculty-stat-count">8 <small>reviews</small></div>
+            </div>
+          </div>
+
+          <h4 style="margin-bottom: 1rem; color: #fff;">Anonymous Student Feedback & Qualitative Comments</h4>
+          <div id="faculty-comments-list">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <!-- ADMIN VIEW -->
+        <div id="view-admin" class="view-container">
+          <div class="banner-card">
+            <div>
+              <h3>Administrative Oversight & Quality Assurance</h3>
+              <p>System Administrator view · Aggregate reporting, audit trail, and instant CSV export.</p>
+            </div>
+            <button class="btn-primary" onclick="exportCsvReport()">
+              <span>📥 Export CSV Report</span>
+            </button>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-label">Total Student Accounts</div>
+              <div class="stat-val">3 <small>active</small></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Faculty Members</div>
+              <div class="stat-val">2 <small>instructors</small></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Course Offerings</div>
+              <div class="stat-val">3 <small>courses</small></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Total Evaluations</div>
+              <div class="stat-val" id="admin-total-feedbacks">6 <small>submitted</small></div>
+            </div>
+          </div>
+
+          <div class="admin-bar">
+            <h4 style="color: #fff; margin: 0;">Institutional Feedback Records</h4>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Course</th>
+                  <th>Faculty</th>
+                  <th>Student (Audit)</th>
+                  <th>Ratings (C / T / O)</th>
+                  <th>Comments</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="admin-feedback-table">
+                <!-- Rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ARCHITECTURE TAB -->
+    <div id="tab-architecture" style="display:none;">
+      <div class="arch-grid">
+        <div class="arch-card">
+          <h4>🗄️ Relational 3NF Architecture</h4>
+          <p>
+            Normalized SQLite schema separating credential authentication from profile details, enrollments, course assignments, and anonymous feedback.
+          </p>
+          <div class="code-block">USERS (id, email, password_hash, role)
+  ├── STUDENTS (user_id, student_number, full_name)
+  └── FACULTY (user_id, full_name, department)
+
+COURSES (id, code, title, credits)
+  ├── STUDENT_COURSES (student_id, course_id, semester)
+  └── COURSE_ASSIGNMENTS (faculty_id, course_id, semester)
+
+FEEDBACK (id, student_id, course_id,
+          assignment_id, semester,
+          content_rating, teaching_rating,
+          overall_rating, comments, created_at)
+  └── UNIQUE(student_id, course_id, semester)</div>
+        </div>
+
+        <div class="arch-card">
+          <h4>🔒 Anonymity & Security Model</h4>
+          <p>
+            Engineered with strict separation of duties to ensure student privacy while maintaining database referential integrity.
+          </p>
+          <div class="code-block">1. Faculty Privacy:
+   Queries join through COURSE_ASSIGNMENTS
+   and omit STUDENT_ID from SELECT clauses.
+
+2. Werkzeug Password Hashing:
+   PBKDF2/Scrypt salting ensures credentials
+   are never stored in plaintext.
+
+3. Duplicate Prevention:
+   UNIQUE(student_id, course_id, semester)
+   constraint prevents duplicate entries.
+
+4. CSRF Protection:
+   Flask-WTF signed session tokens on POST.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIVA TAB -->
+    <div id="tab-viva" style="display:none;">
+      <h3 style="margin-bottom: 1.5rem; color: #fff;">10 Likely Viva / Interview Questions & Answers</h3>
+      <div class="viva-list" id="viva-accordion">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+
+    <!-- DEPLOY TAB -->
+    <div id="tab-deploy" style="display:none;">
+      <div class="arch-grid">
+        <div class="arch-card">
+          <h4>💻 1. Run Locally (Windows PowerShell)</h4>
+          <p>Clone the repository and run the Flask development server in a few steps:</p>
+          <div class="code-block">git clone https://github.com/AshishForCode/feedback-management.git
+cd feedback-management
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+$env:SECRET_KEY = "dev-secret-key-123"
+python run.py</div>
+        </div>
+
+        <div class="arch-card">
+          <h4>☁️ 2. Deploy Live to Render (Free Cloud)</h4>
+          <p>The repository includes <code>render.yaml</code> and <code>Procfile</code> for instant deployment:</p>
+          <div class="code-block">1. Push your repo to GitHub (Done!)
+2. Go to https://dashboard.render.com
+3. Click "New +" -> "Web Service"
+4. Connect "AshishForCode/feedback-management"
+5. Set:
+   - Environment: Python 3
+   - Build Command: pip install -r requirements.txt
+   - Start Command: gunicorn run:app
+6. Hit Deploy!</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Feedback Submission Modal -->
+  <div class="modal-overlay" id="feedback-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h3 id="modal-title">Submit Course Feedback</h3>
+          <span id="modal-subtitle" style="font-size:0.85rem; color:var(--text-muted);">CS101 · Fall 2026</span>
+        </div>
+        <button class="btn-close" onclick="closeFeedbackModal()">&times;</button>
+      </div>
+
+      <div class="anonymity-note">
+        <span>🔒</span>
+        <span>Your feedback is anonymous. Faculty members will only see aggregate numbers and your comments without your name or student ID.</span>
+      </div>
+
+      <input type="hidden" id="form-course-id">
+      <input type="hidden" id="form-feedback-id">
+
+      <div class="form-group">
+        <label class="form-label">1. Course Content & Curriculum Relevance (1 - 5)</label>
+        <div class="rating-row" id="rate-content">
+          <div class="rating-opt" onclick="setRating('content', 1)">1</div>
+          <div class="rating-opt" onclick="setRating('content', 2)">2</div>
+          <div class="rating-opt" onclick="setRating('content', 3)">3</div>
+          <div class="rating-opt" onclick="setRating('content', 4)">4</div>
+          <div class="rating-opt selected" onclick="setRating('content', 5)">5</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">2. Teaching Effectiveness & Clarity (1 - 5)</label>
+        <div class="rating-row" id="rate-teaching">
+          <div class="rating-opt" onclick="setRating('teaching', 1)">1</div>
+          <div class="rating-opt" onclick="setRating('teaching', 2)">2</div>
+          <div class="rating-opt" onclick="setRating('teaching', 3)">3</div>
+          <div class="rating-opt" onclick="setRating('teaching', 4)">4</div>
+          <div class="rating-opt selected" onclick="setRating('teaching', 5)">5</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">3. Overall Course Experience (1 - 5)</label>
+        <div class="rating-row" id="rate-overall">
+          <div class="rating-opt" onclick="setRating('overall', 1)">1</div>
+          <div class="rating-opt" onclick="setRating('overall', 2)">2</div>
+          <div class="rating-opt" onclick="setRating('overall', 3)">3</div>
+          <div class="rating-opt" onclick="setRating('overall', 4)">4</div>
+          <div class="rating-opt selected" onclick="setRating('overall', 5)">5</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Qualitative Comments (Constructive Feedback)</label>
+        <textarea class="form-textarea" id="form-comments" placeholder="Describe what went well or how the course/delivery can be improved..."></textarea>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
+        <button class="btn-secondary" onclick="closeFeedbackModal()">Cancel</button>
+        <button class="btn-primary" onclick="submitFeedbackForm()">
+          <span>Save & Submit Anonymously</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-box" id="toast">
+    <span>✓</span>
+    <span id="toast-msg">Feedback saved successfully!</span>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p style="margin-bottom:0.5rem;"><strong>Student Feedback Management System</strong> — Academic Coursework Project</p>
+      <p style="font-size:0.8rem; color:var(--text-dim);">
+        Repository: <a href="https://github.com/AshishForCode/feedback-management" target="_blank" style="color:#60a5fa; text-decoration:none;">AshishForCode/feedback-management</a> · Built with Flask, SQLite, and 3NF Relational Standards
+      </p>
+    </div>
+  </footer>
+
+  <script>
+    // Initial Seed Data
+    const INITIAL_STATE = {
+      courses: [
+        { id: 1, code: 'CS101', title: 'Introduction to Computer Science', faculty: 'Dr. Alan Turing', semester: '2026-Fall', credits: 4 },
+        { id: 2, code: 'CS201', title: 'Data Structures & Algorithms', faculty: 'Prof. Ada Lovelace', semester: '2026-Fall', credits: 4 },
+        { id: 3, code: 'MATH101', title: 'Discrete Mathematics & Calculus', faculty: 'Prof. Carl Gauss', semester: '2026-Fall', credits: 3 }
+      ],
+      feedbacks: [
+        {
+          id: 1,
+          studentId: 'STU2024001',
+          studentName: 'John Doe',
+          courseId: 1,
+          courseCode: 'CS101',
+          facultyName: 'Dr. Alan Turing',
+          semester: '2026-Fall',
+          contentRating: 5,
+          teachingRating: 5,
+          overallRating: 5,
+          comments: 'The foundations were explained clearly with engaging visual examples. Highly recommended!',
+          createdAt: new Date(Date.now() - 3600 * 1000 * 2).toISOString(),
+          editableUntil: new Date(Date.now() + 3600 * 1000 * 22).toISOString()
+        },
+        {
+          id: 2,
+          studentId: 'STU2024002',
+          studentName: 'Alice Smith',
+          courseId: 1,
+          courseCode: 'CS101',
+          facultyName: 'Dr. Alan Turing',
+          semester: '2026-Fall',
+          contentRating: 4,
+          teachingRating: 5,
+          overallRating: 4,
+          comments: 'Enjoyed the algorithmic puzzles. The assignments were challenging but fair.',
+          createdAt: new Date(Date.now() - 3600 * 1000 * 14).toISOString(),
+          editableUntil: new Date(Date.now() + 3600 * 1000 * 10).toISOString()
+        },
+        {
+          id: 3,
+          studentId: 'STU2024003',
+          studentName: 'Bob Vance',
+          courseId: 2,
+          courseCode: 'CS201',
+          facultyName: 'Prof. Ada Lovelace',
+          semester: '2026-Fall',
+          contentRating: 5,
+          teachingRating: 4,
+          overallRating: 5,
+          comments: 'Great depth on binary trees and graph algorithms.',
+          createdAt: new Date(Date.now() - 3600 * 1000 * 48).toISOString(),
+          editableUntil: new Date(Date.now() - 3600 * 1000 * 24).toISOString() // Expired
+        }
+      ]
+    };
+
+    const VIVA_QA = [
+      {
+        q: "1. Why use SQLite instead of MySQL or PostgreSQL for this application?",
+        a: "SQLite is serverless, zero-configuration, and integrated directly into Python's standard library. For this academic and coursework scope, it provides complete relational ACID compliance, foreign-key enforcement, and transactional integrity without requiring an external database server to run."
+      },
+      {
+        q: "2. How are user passwords securely stored?",
+        a: "Werkzeug's password hashing functions (generate_password_hash and check_password_hash) are used. Plaintext passwords are never stored. Passwords are salted and encrypted with modern hashing algorithms (PBKDF2/Scrypt) making rainbow-table and dictionary attacks computationally infeasible."
+      },
+      {
+        q: "3. How does the system guarantee feedback anonymity for faculty?",
+        a: "The faculty dashboard routes and SQL queries join feedback records through COURSE_ASSIGNMENTS and specifically omit the student_id or any student profile fields from the SELECT query. Faculty only see aggregate metrics and un-attributed comments."
+      },
+      {
+        q: "4. How are duplicate feedback submissions prevented?",
+        a: "At the database level, a UNIQUE(student_id, course_id, semester) composite constraint guarantees that no student can ever submit more than one feedback entry per course per term, even in the event of concurrent browser requests."
+      },
+      {
+        q: "5. What protects the application against SQL Injection?",
+        a: "All database queries use parameterized SQL statements with standard question mark '?' placeholders. User input is treated strictly as data literals and never concatenated into SQL execution strings."
+      },
+      {
+        q: "6. What is CSRF protection and how is it implemented?",
+        a: "Cross-Site Request Forgery (CSRF) tricks an authenticated user into executing unauthorized actions. Flask-WTF generates a cryptographic, session-tied token embedded in every state-changing form. Requests lacking a valid token are rejected with HTTP 400."
+      },
+      {
+        q: "7. How is the database schema structured in 3NF (Third Normal Form)?",
+        a: "1NF: All attributes are atomic. 2NF: No partial dependency on composite keys. 3NF: No transitive dependencies. Credentials live in 'users', student details in 'students', course offerings in 'courses', and feedback refers only to the specific enrollment/assignment foreign keys."
+      },
+      {
+        q: "8. What is the feedback edit window and how does it function?",
+        a: "Students have a 24-hour grace period (configured via FEEDBACK_EDIT_HOURS) after submission to revise or withdraw their evaluation. Once the 24 hours expire, the submission is permanently locked."
+      },
+      {
+        q: "9. How does role-based access control (RBAC) work?",
+        a: "A custom Python decorator @role_required('admin') or ('student'/'faculty') intercepts requests. It verifies the authenticated user's role and immediately aborts with HTTP 403 Forbidden if permissions are insufficient."
+      },
+      {
+        q: "10. How are institutional averages calculated for admin reports?",
+        a: "SQL aggregate functions (AVG, COUNT) group feedback by course, faculty, or semester to compute exact mathematical ratings for course content, teaching quality, and overall satisfaction."
+      }
+    ];
+
+    // Local state management
+    let state = loadState();
+    let currentRole = 'student';
+    let currentRatings = { content: 5, teaching: 5, overall: 5 };
+
+    function loadState() {
+      const saved = localStorage.getItem('feedback_sim_state');
+      if (saved) {
+        try { return JSON.parse(saved); } catch(e) {}
+      }
+      return JSON.parse(JSON.stringify(INITIAL_STATE));
+    }
+
+    function saveState() {
+      localStorage.setItem('feedback_sim_state', JSON.stringify(state));
+    }
+
+    function resetDemoData() {
+      if (confirm('Reset demo state back to default seed records?')) {
+        localStorage.removeItem('feedback_sim_state');
+        state = JSON.parse(JSON.stringify(INITIAL_STATE));
+        renderAll();
+        showToast('Demo data reset to original seed state!');
+      }
+    }
+
+    function switchMainTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+
+      ['demo', 'architecture', 'viva', 'deploy'].forEach(t => {
+        const el = document.getElementById('tab-' + t);
+        if (el) el.style.display = (t === tabId) ? 'block' : 'none';
+      });
+    }
+
+    function setRole(role) {
+      currentRole = role;
+      document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('btn-role-' + role).classList.add('active');
+
+      document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
+      document.getElementById('view-' + role).classList.add('active');
+
+      const tag = document.getElementById('current-user-tag');
+      if (role === 'student') tag.textContent = 'student@feedback.local (John Doe)';
+      else if (role === 'faculty') tag.textContent = 'faculty@feedback.local (Dr. Alan Turing)';
+      else tag.textContent = 'admin@feedback.local (System Admin)';
+
+      renderAll();
+    }
+
+    function renderAll() {
+      renderStudentView();
+      renderFacultyView();
+      renderAdminView();
+    }
+
+    /* Student View Logic */
+    function renderStudentView() {
+      const container = document.getElementById('student-courses-grid');
+      container.innerHTML = '';
+
+      state.courses.forEach(c => {
+        const feedback = state.feedbacks.find(f => f.studentId === 'STU2024001' && f.courseId === c.id);
+        const card = document.createElement('div');
+        card.className = 'course-card';
+
+        let actionBtn = '';
+        if (feedback) {
+          const isExpired = new Date(feedback.editableUntil) < new Date();
+          actionBtn = `
+            <div style="display:flex; gap:0.4rem;">
+              <button class="btn-secondary" style="padding:0.4rem 0.75rem; font-size:0.8rem;" onclick="openEditModal(${feedback.id})">Edit</button>
+              <button class="btn-reset" style="padding:0.4rem 0.75rem; font-size:0.8rem;" onclick="deleteFeedback(${feedback.id})">Delete</button>
+            </div>
+          `;
+        } else {
+          actionBtn = `
+            <button class="btn-primary" style="padding:0.4rem 0.9rem; font-size:0.8rem;" onclick="openFeedbackModal(${c.id})">
+              <span>Submit Feedback</span>
+            </button>
+          `;
+        }
+
+        card.innerHTML = `
+          <div>
+            <span class="course-code">${c.code} · ${c.credits} Credits</span>
+            <div class="course-title">${c.title}</div>
+            <div class="course-faculty">Instructor: ${c.faculty}</div>
+          </div>
+          <div class="course-footer">
+            <span class="status-badge ${feedback ? 'submitted' : 'pending'}">
+              ${feedback ? '✓ Submitted' : '○ Pending Feedback'}
+            </span>
+            ${actionBtn}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      // Render student history
+      const historyBody = document.getElementById('student-history-body');
+      const studentFeedbacks = state.feedbacks.filter(f => f.studentId === 'STU2024001');
+      historyBody.innerHTML = '';
+
+      if (studentFeedbacks.length === 0) {
+        historyBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-dim); padding:1.5rem;">No evaluations submitted yet. Submit feedback above!</td></tr>`;
+      } else {
+        studentFeedbacks.forEach(f => {
+          const isExpired = new Date(f.editableUntil) < new Date();
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><strong>${f.courseCode}</strong></td>
+            <td><span style="color:#34d399; font-weight:700;">${f.contentRating}</span> / <span style="color:#60a5fa; font-weight:700;">${f.teachingRating}</span> / <span style="color:#a78bfa; font-weight:700;">${f.overallRating}</span></td>
+            <td><span style="color:var(--text-muted); font-size:0.85rem;">${f.comments || '—'}</span></td>
+            <td>${new Date(f.createdAt).toLocaleDateString()}</td>
+            <td>
+              <span class="status-badge ${isExpired ? 'pending' : 'submitted'}">
+                ${isExpired ? 'Locked (24h passed)' : 'Active Edit Window'}
+              </span>
+            </td>
+            <td>
+              <button class="btn-secondary" style="padding:0.3rem 0.6rem; font-size:0.75rem;" onclick="openEditModal(${f.id})">Edit</button>
+              <button class="btn-reset" style="padding:0.3rem 0.6rem; font-size:0.75rem;" onclick="deleteFeedback(${f.id})">Delete</button>
+            </td>
+          `;
+          historyBody.appendChild(tr);
+        });
+      }
+    }
+
+    /* Faculty View Logic */
+    function renderFacultyView() {
+      // Alan Turing teaches CS101 (id: 1)
+      const turingFeedbacks = state.feedbacks.filter(f => f.courseId === 1);
+      const count = turingFeedbacks.length;
+
+      let avgContent = 0, avgTeaching = 0, avgOverall = 0;
+      if (count > 0) {
+        avgContent = (turingFeedbacks.reduce((a, b) => a + b.contentRating, 0) / count).toFixed(1);
+        avgTeaching = (turingFeedbacks.reduce((a, b) => a + b.teachingRating, 0) / count).toFixed(1);
+        avgOverall = (turingFeedbacks.reduce((a, b) => a + b.overallRating, 0) / count).toFixed(1);
+      }
+
+      document.getElementById('faculty-stat-teaching').innerHTML = `${avgTeaching || '0.0'} <small>/ 5.0</small>`;
+      document.getElementById('faculty-stat-content').innerHTML = `${avgContent || '0.0'} <small>/ 5.0</small>`;
+      document.getElementById('faculty-stat-overall').innerHTML = `${avgOverall || '0.0'} <small>/ 5.0</small>`;
+      document.getElementById('faculty-stat-count').innerHTML = `${count} <small>reviews</small>`;
+
+      const commentsList = document.getElementById('faculty-comments-list');
+      commentsList.innerHTML = '';
+
+      if (count === 0) {
+        commentsList.innerHTML = `<div style="color:var(--text-dim); text-align:center; padding:1.5rem;">No reviews submitted yet for CS101.</div>`;
+      } else {
+        turingFeedbacks.forEach(f => {
+          const div = document.createElement('div');
+          div.className = 'comment-card';
+          div.innerHTML = `
+            <div class="comment-meta">
+              <span>Course: <strong>${f.courseCode}</strong> (${f.semester}) · Score: <strong>${f.overallRating}/5</strong></span>
+              <span class="status-badge submitted" style="font-size:0.7rem;">🔒 Anonymous Student</span>
+            </div>
+            <div class="comment-text">"${f.comments || 'No written comment provided.'}"</div>
+          `;
+          commentsList.appendChild(div);
+        });
+      }
+    }
+
+    /* Admin View Logic */
+    function renderAdminView() {
+      document.getElementById('admin-total-feedbacks').innerHTML = `${state.feedbacks.length} <small>submitted</small>`;
+
+      const tbody = document.getElementById('admin-feedback-table');
+      tbody.innerHTML = '';
+
+      state.feedbacks.forEach(f => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>#${f.id}</td>
+          <td><strong>${f.courseCode}</strong></td>
+          <td>${f.facultyName}</td>
+          <td><span class="sim-user-tag">${f.studentName} (${f.studentId})</span></td>
+          <td>${f.contentRating} / ${f.teachingRating} / ${f.overallRating}</td>
+          <td style="max-width:240px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${f.comments || '—'}</td>
+          <td>${new Date(f.createdAt).toLocaleDateString()}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    /* Modal Form Operations */
+    function openFeedbackModal(courseId) {
+      const course = state.courses.find(c => c.id === courseId);
+      document.getElementById('modal-title').textContent = 'Submit Course Feedback';
+      document.getElementById('modal-subtitle').textContent = `${course.code}: ${course.title} · ${course.faculty}`;
+      document.getElementById('form-course-id').value = course.id;
+      document.getElementById('form-feedback-id').value = '';
+      document.getElementById('form-comments').value = '';
+      setRating('content', 5);
+      setRating('teaching', 5);
+      setRating('overall', 5);
+      document.getElementById('feedback-modal').classList.add('active');
+    }
+
+    function openEditModal(feedbackId) {
+      const f = state.feedbacks.find(x => x.id === feedbackId);
+      if (!f) return;
+      document.getElementById('modal-title').textContent = 'Edit Course Feedback';
+      document.getElementById('modal-subtitle').textContent = `${f.courseCode} · ${f.facultyName} (Within 24h Window)`;
+      document.getElementById('form-course-id').value = f.courseId;
+      document.getElementById('form-feedback-id').value = f.id;
+      document.getElementById('form-comments').value = f.comments;
+      setRating('content', f.contentRating);
+      setRating('teaching', f.teachingRating);
+      setRating('overall', f.overallRating);
+      document.getElementById('feedback-modal').classList.add('active');
+    }
+
+    function closeFeedbackModal() {
+      document.getElementById('feedback-modal').classList.remove('active');
+    }
+
+    function setRating(metric, value) {
+      currentRatings[metric] = value;
+      const row = document.getElementById('rate-' + metric);
+      row.querySelectorAll('.rating-opt').forEach((opt, idx) => {
+        if (idx + 1 === value) opt.classList.add('selected');
+        else opt.classList.remove('selected');
+      });
+    }
+
+    function submitFeedbackForm() {
+      const courseId = parseInt(document.getElementById('form-course-id').value);
+      const feedbackId = document.getElementById('form-feedback-id').value;
+      const comments = document.getElementById('form-comments').value.trim();
+      const course = state.courses.find(c => c.id === courseId);
+
+      if (feedbackId) {
+        // Edit existing
+        const item = state.feedbacks.find(f => f.id === parseInt(feedbackId));
+        if (item) {
+          item.contentRating = currentRatings.content;
+          item.teachingRating = currentRatings.teaching;
+          item.overallRating = currentRatings.overall;
+          item.comments = comments;
+          saveState();
+          showToast('Feedback updated successfully!');
+        }
+      } else {
+        // Create new (Check duplicate)
+        const duplicate = state.feedbacks.some(f => f.studentId === 'STU2024001' && f.courseId === courseId && f.semester === '2026-Fall');
+        if (duplicate) {
+          alert('Error: You have already submitted feedback for this course and semester (UNIQUE constraint enforced).');
+          return;
+        }
+
+        const newId = (state.feedbacks.length > 0 ? Math.max(...state.feedbacks.map(f => f.id)) : 0) + 1;
+        state.feedbacks.push({
+          id: newId,
+          studentId: 'STU2024001',
+          studentName: 'John Doe',
+          courseId: course.id,
+          courseCode: course.code,
+          facultyName: course.faculty,
+          semester: '2026-Fall',
+          contentRating: currentRatings.content,
+          teachingRating: currentRatings.teaching,
+          overallRating: currentRatings.overall,
+          comments: comments,
+          createdAt: new Date().toISOString(),
+          editableUntil: new Date(Date.now() + 24 * 3600 * 1000).toISOString()
+        });
+        saveState();
+        showToast('Feedback submitted anonymously!');
+      }
+
+      closeFeedbackModal();
+      renderAll();
+    }
+
+    function deleteFeedback(feedbackId) {
+      if (confirm('Delete this feedback submission?')) {
+        state.feedbacks = state.feedbacks.filter(f => f.id !== feedbackId);
+        saveState();
+        renderAll();
+        showToast('Feedback record deleted.');
+      }
+    }
+
+    /* CSV Export */
+    function exportCsvReport() {
+      let csv = "feedback_id,course_code,faculty_name,student_id,semester,content_rating,teaching_rating,overall_rating,comments,created_at\n";
+      state.feedbacks.forEach(f => {
+        const commentEscaped = `"${(f.comments || '').replace(/"/g, '""')}"`;
+        csv += `${f.id},${f.courseCode},${f.facultyName},${f.studentId},${f.semester},${f.contentRating},${f.teachingRating},${f.overallRating},${commentEscaped},${f.createdAt}\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `feedback_report_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('Downloaded feedback_report.csv!');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = msg;
+      toast.style.display = 'flex';
+      setTimeout(() => { toast.style.display = 'none'; }, 3200);
+    }
+
+    // Initialize Viva Accordion
+    function initViva() {
+      const container = document.getElementById('viva-accordion');
+      VIVA_QA.forEach((qa, idx) => {
+        const item = document.createElement('div');
+        item.className = 'viva-item';
+        item.innerHTML = `
+          <div class="viva-question" onclick="this.parentElement.classList.toggle('open')">
+            <span>${qa.q}</span>
+            <span style="font-size:1.1rem;">▾</span>
+          </div>
+          <div class="viva-answer">${qa.a}</div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    // Init Page
+    window.addEventListener('DOMContentLoaded', () => {
+      renderAll();
+      initViva();
+    });
+  </script>
+</body>
+</html>

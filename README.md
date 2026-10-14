@@ -1,5 +1,11 @@
 # Student Feedback Management System
 
+[![Live Demo](https://img.shields.io/badge/GitHub%20Pages-Live%20Demo-10b981?style=for-the-badge&logo=github)](https://ashishforcode.github.io/feedback-management/)
+[![Flask](https://img.shields.io/badge/Flask-3.x-black?style=for-the-badge&logo=flask)](https://flask.palletsprojects.com/)
+[![SQLite](https://img.shields.io/badge/SQLite-3-blue?style=for-the-badge&logo=sqlite)](https://www.sqlite.org/)
+
+> **🌐 Live Interactive Demo:** Test the Student, Faculty, and Admin workflows directly in your browser on GitHub Pages at **[https://ashishforcode.github.io/feedback-management/](https://ashishforcode.github.io/feedback-management/)**.
+
 A coursework-sized Flask application for anonymous course feedback. The implementation is staged: database and authentication first, then student/faculty workflows, then administration and aggregate reports. SQLite is used so the application runs locally without a separate database server.
 
 ## 1. Project Structure
@@ -23,6 +29,10 @@ feedback-management/
 │       ├── faculty/                # Faculty dashboard
 │       └── admin/                  # Admin dashboard, edit forms, reports
 ├── tests/test_app.py               # Flask test-client workflow tests
+├── index.html                      # GitHub Pages live interactive showcase & demo
+├── Dockerfile                      # Container deployment configuration
+├── Procfile                        # WSGI process definition for Render & Railway
+├── render.yaml                     # Render Blueprint specification
 ├── .gitignore
 ├── requirements.txt
 ├── run.py                          # Local development entry point
@@ -106,6 +116,21 @@ Use the same virtual environment for the server and tests. For local development
 - Admin: `admin@feedback.local`
 - Faculty: `faculty@feedback.local`
 - Student: `student@feedback.local`
+
+### Cloud Deployment (Render / Railway / Docker)
+
+The repository includes ready-to-deploy configuration files for hosting the live Python/WSGI application:
+
+- `Procfile` (`web: gunicorn run:app`) for Render and Railway.
+- `render.yaml` for Render Blueprint deployment.
+- `Dockerfile` for containerized environments.
+
+**Deploying to Render (Free Web Service):**
+1. Sign in to [Render](https://render.com) and create a **New Web Service**.
+2. Connect your GitHub repository `AshishForCode/feedback-management`.
+3. Set the build command to `pip install -r requirements.txt`.
+4. Set the start command to `gunicorn run:app`.
+5. Set the environment variable `SECRET_KEY` to a random secret string.
 
 Change or remove these demonstration accounts before using real student data.
 
