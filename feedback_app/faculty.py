@@ -94,7 +94,7 @@ def create_form():
         for text, q_type in zip(question_texts, question_types):
             t = text.strip()
             if t:
-                if q_type not in ("rating", "text"):
+                if q_type not in ("rating", "text", "yes_no"):
                     q_type = "rating"
                 cleaned_questions.append((t, q_type))
 
@@ -120,6 +120,64 @@ def create_form():
         return redirect(url_for("faculty.dashboard"))
 
     return render_template("faculty/create_form.html", assignments=assignments)
+
+
+@bp.route("/forms/<int:form_id>/edit", methods=("GET", "POST"))
+@roles_required("faculty")
+def edit_form(form_id):
+    db = get_db()
+    form = db.execute(
+        """SELECT ff.*, ca.semester, c.course_code, c.course_name
+           FROM feedback_forms ff
+           JOIN course_assignments ca ON ca.assignment_id = ff.assignment_id
+           JOIN courses c ON c.course_id = ca.course_id
+           WHERE ff.form_id = ? AND ff.faculty_id = ?""",
+        (form_id, current_user.id),
+    ).fetchone()
+    if form is None:
+        abort(404)
+
+    if request.method == "POST":
+        title = request.form.get("title", "").strip()
+        instructions = request.form.get("instructions", "").strip()
+        if not title or len(title) > 150:
+            flash("Form title must be between 1 and 150 characters.", "danger")
+            return redirect(url_for("faculty.edit_form", form_id=form_id))
+
+        question_texts = request.form.getlist("question_text[]")
+        question_types = request.form.getlist("question_type[]")
+        cleaned_questions = []
+        for text, q_type in zip(question_texts, question_types):
+            t = text.strip()
+            if t:
+                if q_type not in ("rating", "text", "yes_no"):
+                    q_type = "rating"
+                cleaned_questions.append((t, q_type))
+
+        if not cleaned_questions:
+            flash("Please add at least one question to your feedback form.", "danger")
+            return redirect(url_for("faculty.edit_form", form_id=form_id))
+
+        db.execute(
+            "UPDATE feedback_forms SET title = ?, instructions = ? WHERE form_id = ?",
+            (title, instructions, form_id),
+        )
+        db.execute("DELETE FROM form_questions WHERE form_id = ?", (form_id,))
+        for idx, (q_text, q_type) in enumerate(cleaned_questions, start=1):
+            db.execute(
+                """INSERT INTO form_questions (form_id, question_text, question_type, order_num)
+                   VALUES (?, ?, ?, ?)""",
+                (form_id, q_text, q_type, idx),
+            )
+        db.commit()
+        flash(f"Feedback form '{title}' updated successfully!", "success")
+        return redirect(url_for("faculty.dashboard"))
+
+    questions = db.execute(
+        "SELECT * FROM form_questions WHERE form_id = ? ORDER BY order_num ASC",
+        (form_id,),
+    ).fetchall()
+    return render_template("faculty/edit_form.html", form=form, questions=questions)
 
 
 @bp.get("/forms/<int:form_id>")
@@ -170,6 +228,27 @@ def view_form(form_id):
                 "average": stats["average"] if stats["average"] is not None else "—",
                 "total": stats["total"],
                 "distribution": distribution,
+            })
+        elif q["question_type"] == "yes_no":
+            yes_cnt = db.execute(
+                "SELECT COUNT(*) FROM form_responses WHERE question_id = ? AND (text_value = 'Yes' OR text_value = 'yes')",
+                (q["question_id"],),
+            ).fetchone()[0]
+            no_cnt = db.execute(
+                "SELECT COUNT(*) FROM form_responses WHERE question_id = ? AND (text_value = 'No' OR text_value = 'no')",
+                (q["question_id"],),
+            ).fetchone()[0]
+            total = yes_cnt + no_cnt
+            yes_pct = round((yes_cnt / total) * 100) if total > 0 else 0
+            no_pct = round((no_cnt / total) * 100) if total > 0 else 0
+            results.append({
+                "question": q,
+                "type": "yes_no",
+                "yes_count": yes_cnt,
+                "no_count": no_cnt,
+                "total": total,
+                "yes_pct": yes_pct,
+                "no_pct": no_pct,
             })
         else:
             text_rows = db.execute(

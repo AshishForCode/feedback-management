@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS form_questions (
     question_id INTEGER PRIMARY KEY AUTOINCREMENT,
     form_id INTEGER NOT NULL,
     question_text TEXT NOT NULL,
-    question_type TEXT NOT NULL DEFAULT 'rating' CHECK (question_type IN ('rating', 'text')),
+    question_type TEXT NOT NULL DEFAULT 'rating' CHECK (question_type IN ('rating', 'text', 'yes_no')),
     order_num INTEGER NOT NULL DEFAULT 1,
     FOREIGN KEY (form_id) REFERENCES feedback_forms(form_id) ON DELETE CASCADE
 );

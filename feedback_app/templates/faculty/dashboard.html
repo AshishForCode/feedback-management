@@ -56,6 +56,9 @@
                   <a href="{{ url_for('faculty.view_form', form_id=form.form_id) }}" class="btn btn-sm btn-outline-primary">
                     View Responses
                   </a>
+                  <a href="{{ url_for('faculty.edit_form', form_id=form.form_id) }}" class="btn btn-sm btn-outline-secondary">
+                    Edit
+                  </a>
                   <form method="post" action="{{ url_for('faculty.toggle_form', form_id=form.form_id) }}" class="d-inline m-0">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button type="submit" class="btn btn-sm btn-outline-secondary">

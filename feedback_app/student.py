@@ -210,6 +210,12 @@ def fill_form(form_id):
                     flash(f"Please select a rating between 1 and 5 for: {q['question_text']}", "danger")
                     return render_template("student/fill_form.html", form=form, questions=questions, already_submitted=already_submitted)
                 responses_to_save.append((form_id, current_user.id, q_id, val, ""))
+            elif q["question_type"] == "yes_no":
+                yn_val = request.form.get(f"question_{q_id}", "").strip().title()
+                if yn_val not in ("Yes", "No"):
+                    flash(f"Please select Yes or No for: {q['question_text']}", "danger")
+                    return render_template("student/fill_form.html", form=form, questions=questions, already_submitted=already_submitted)
+                responses_to_save.append((form_id, current_user.id, q_id, None, yn_val))
             else:
                 text_val = request.form.get(f"question_{q_id}", "").strip()
                 if len(text_val) > 1000:

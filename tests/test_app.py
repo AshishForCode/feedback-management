@@ -243,7 +243,77 @@ class FeedbackApplicationTests(unittest.TestCase):
             is_active = get_db().execute("SELECT is_active FROM feedback_forms WHERE form_id = ?", (form_id,)).fetchone()[0]
             self.assertEqual(is_active, 0)
 
+    def test_faculty_can_edit_form_and_handle_yes_no_questions(self):
+        # 1. Faculty logs in and creates form with all 3 question types (rating, written, yes_no)
+        self.login("faculty@feedback.local")
+        create_res = self.client.post("/faculty/forms/create", data={
+            "assignment_id": "1",
+            "title": "Initial Form Title",
+            "instructions": "Initial instructions",
+            "question_text[]": ["Rate the pacing", "Was the demo helpful?", "Any suggestions?"],
+            "question_type[]": ["rating", "yes_no", "text"],
+        })
+        self.assertEqual(create_res.status_code, 302)
+
+        with self.app.app_context():
+            from feedback_app.db import get_db
+            db = get_db()
+            form = db.execute("SELECT * FROM feedback_forms WHERE title = 'Initial Form Title'").fetchone()
+            form_id = form["form_id"]
+
+        # 2. Faculty edits / updates the custom form
+        edit_page = self.client.get(f"/faculty/forms/{form_id}/edit")
+        self.assertEqual(edit_page.status_code, 200)
+        self.assertIn(b"Initial Form Title", edit_page.data)
+
+        edit_res = self.client.post(f"/faculty/forms/{form_id}/edit", data={
+            "title": "Updated Form Title",
+            "instructions": "Updated instructions for students",
+            "is_active": "1",
+            "question_text[]": ["Rate overall difficulty (1-5)", "Did you finish the lab on time?", "Written comments"],
+            "question_type[]": ["rating", "yes_no", "text"],
+        })
+        self.assertEqual(edit_res.status_code, 302)
+
+        with self.app.app_context():
+            from feedback_app.db import get_db
+            db = get_db()
+            updated_form = db.execute("SELECT * FROM feedback_forms WHERE form_id = ?", (form_id,)).fetchone()
+            self.assertEqual(updated_form["title"], "Updated Form Title")
+            self.assertEqual(updated_form["instructions"], "Updated instructions for students")
+            questions = db.execute("SELECT * FROM form_questions WHERE form_id = ? ORDER BY order_num", (form_id,)).fetchall()
+            self.assertEqual(len(questions), 3)
+            self.assertEqual(questions[1]["question_type"], "yes_no")
+            q_rating_id = questions[0]["question_id"]
+            q_yesno_id = questions[1]["question_id"]
+            q_text_id = questions[2]["question_id"]
+
+        self.client.post("/auth/logout")
+
+        # 3. Student fills the updated form with rating, yes_no, and written text
+        self.login("student@feedback.local")
+        fill_page = self.client.get(f"/student/forms/{form_id}")
+        self.assertEqual(fill_page.status_code, 200)
+        self.assertIn(b"Updated Form Title", fill_page.data)
+        self.assertIn(b"Did you finish the lab on time?", fill_page.data)
+
+        submit_res = self.client.post(f"/student/forms/{form_id}", data={
+            f"question_{q_rating_id}": "4",
+            f"question_{q_yesno_id}": "Yes",
+            f"question_{q_text_id}": "Clear instructions, loved the lab.",
+        })
+        self.assertEqual(submit_res.status_code, 302)
+        self.client.post("/auth/logout")
+
+        # 4. Faculty views responses
+        self.login("faculty@feedback.local")
+        view_res = self.client.get(f"/faculty/forms/{form_id}")
+        self.assertEqual(view_res.status_code, 200)
+        self.assertIn(b"Clear instructions, loved the lab.", view_res.data)
+        self.assertIn(b"100%", view_res.data)  # 1 Yes = 100%
+
 
 if __name__ == "__main__":
     unittest.main()
+
 

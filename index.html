@@ -1288,18 +1288,20 @@
     </div>
   </div>
 
-  <!-- Faculty Create Custom Form Modal -->
+  <!-- Faculty Create / Edit Custom Form Modal -->
   <div class="modal-overlay" id="modal-create-custom-form">
-    <div class="modal-card" style="max-width: 620px;">
+    <div class="modal-card" style="max-width: 650px;">
       <div class="modal-header">
         <div>
-          <h3>Create Custom Feedback Form</h3>
-          <span style="font-size:0.85rem; color:var(--text-muted);">Construct an anonymous feedback survey for your students</span>
+          <h3 id="custom-form-modal-title">Create Custom Feedback Form</h3>
+          <span id="custom-form-modal-subtitle" style="font-size:0.85rem; color:var(--text-muted);">Construct an anonymous feedback survey for your students</span>
         </div>
         <button class="btn-close" onclick="closeCreateCustomFormModal()">&times;</button>
       </div>
 
-      <div class="form-group">
+      <input type="hidden" id="custom-form-edit-id" value="">
+
+      <div class="form-group" id="custom-form-course-group">
         <label class="form-label">Target Course</label>
         <select class="form-textarea" style="min-height:auto; padding:0.5rem;" id="custom-form-course-select">
           <option value="1">CS101 · Introduction to Computer Science (2026-Fall)</option>
@@ -1316,21 +1318,24 @@
         <textarea class="form-textarea" id="custom-form-instructions" rows="2" placeholder="e.g. Please share honest feedback about lecture pacing and lab assignments."></textarea>
       </div>
 
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
-        <label class="form-label" style="margin:0;">Form Questions</label>
-        <button type="button" class="btn-secondary" onclick="addCustomFormQuestionRow()" style="padding:0.25rem 0.6rem; font-size:0.75rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.5rem;">
+        <div>
+          <label class="form-label" style="margin:0;">Form Questions & Criteria</label>
+          <div style="font-size:0.75rem; color:var(--text-muted);">Types: <strong>Rating (1-5)</strong> · <strong>Yes / No</strong> · <strong>Written</strong></div>
+        </div>
+        <button type="button" class="btn-secondary" onclick="addCustomFormQuestionRow('', 'rating')" style="padding:0.25rem 0.6rem; font-size:0.75rem;">
           + Add Question
         </button>
       </div>
 
-      <div id="custom-form-questions-list" style="display:flex; flex-direction:column; gap:0.6rem; max-height:220px; overflow-y:auto; margin-bottom:1rem; padding-right:4px;">
+      <div id="custom-form-questions-list" style="display:flex; flex-direction:column; gap:0.65rem; max-height:240px; overflow-y:auto; margin-bottom:1rem; padding-right:4px;">
         <!-- Dynamic Questions added here -->
       </div>
 
       <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.25rem;">
         <button class="btn-secondary" onclick="closeCreateCustomFormModal()">Cancel</button>
         <button class="btn-primary" onclick="submitCreateCustomForm()">
-          <span>Publish Feedback Form</span>
+          <span id="custom-form-submit-btn-text">Publish Feedback Form</span>
         </button>
       </div>
     </div>
@@ -1533,7 +1538,7 @@
           isActive: true,
           questions: [
             { id: 1, text: 'How clearly does the instructor explain core programming concepts?', type: 'rating' },
-            { id: 2, text: 'How effective are the practical coding demonstrations and lab sessions?', type: 'rating' },
+            { id: 2, text: 'Were practical lab demonstrations and explanations easy to follow?', type: 'yes_no' },
             { id: 3, text: 'What topics or areas would you like more hands-on practice or review on?', type: 'text' }
           ],
           responses: [
@@ -1541,7 +1546,7 @@
               studentId: 'STU2024002',
               answers: {
                 1: 5,
-                2: 4,
+                2: 'Yes',
                 3: 'The visual memory diagrams were very clear. Would appreciate more binary tree examples.'
               },
               submittedAt: new Date(Date.now() - 3600 * 1000 * 10).toISOString()
@@ -1942,8 +1947,9 @@
                   </span>
                 </td>
                 <td>
-                  <div style="display:flex; gap:0.4rem;">
+                  <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
                     <button class="btn-primary" style="padding:0.3rem 0.6rem; font-size:0.75rem;" onclick="openViewCustomResponsesModal(${f.id})"><span>View Responses</span></button>
+                    <button class="btn-secondary" style="padding:0.3rem 0.6rem; font-size:0.75rem;" onclick="openEditCustomFormModal(${f.id})">Edit / Update</button>
                     <button class="btn-secondary" style="padding:0.3rem 0.6rem; font-size:0.75rem;" onclick="toggleCustomFormStatus(${f.id})">${f.isActive ? 'Close' : 'Reopen'}</button>
                     <button class="btn-reset" style="padding:0.3rem 0.6rem; font-size:0.75rem;" onclick="deleteCustomForm(${f.id})">Delete</button>
                   </div>
@@ -2228,27 +2234,45 @@
 
     /* Custom Feedback Form Handlers */
     function openCreateCustomFormModal() {
+      document.getElementById('custom-form-edit-id').value = '';
+      document.getElementById('custom-form-modal-title').textContent = 'Create Custom Feedback Form';
+      document.getElementById('custom-form-modal-subtitle').textContent = 'Construct an anonymous feedback survey for your students';
+      document.getElementById('custom-form-submit-btn-text').textContent = 'Publish Feedback Form';
       document.getElementById('custom-form-title').value = '';
       document.getElementById('custom-form-instructions').value = '';
+
       const list = document.getElementById('custom-form-questions-list');
-      list.innerHTML = `
-        <div class="custom-q-row" style="display:flex; gap:0.5rem; align-items:center;">
-          <input type="text" class="form-textarea" style="min-height:auto; padding:0.4rem 0.6rem; flex:2;" placeholder="Question 1 (e.g. Clarity of lecture concepts)" value="How clearly were core concepts and course materials explained?">
-          <select class="form-textarea" style="min-height:auto; padding:0.4rem; flex:1;">
-            <option value="rating" selected>Rating (1-5)</option>
-            <option value="text">Written Comment</option>
-          </select>
-          <button type="button" class="btn-reset" onclick="removeCustomFormQuestionRow(this)" style="padding:0.4rem 0.6rem;">✕</button>
-        </div>
-        <div class="custom-q-row" style="display:flex; gap:0.5rem; align-items:center;">
-          <input type="text" class="form-textarea" style="min-height:auto; padding:0.4rem 0.6rem; flex:2;" placeholder="Question 2 (e.g. Suggestions for improvement)" value="What topics or areas would you like more hands-on practice or review on?">
-          <select class="form-textarea" style="min-height:auto; padding:0.4rem; flex:1;">
-            <option value="rating">Rating (1-5)</option>
-            <option value="text" selected>Written Comment</option>
-          </select>
-          <button type="button" class="btn-reset" onclick="removeCustomFormQuestionRow(this)" style="padding:0.4rem 0.6rem;">✕</button>
-        </div>
-      `;
+      list.innerHTML = '';
+      addCustomFormQuestionRow('How clearly were core concepts and course materials explained?', 'rating');
+      addCustomFormQuestionRow('Were practical lab demonstrations and explanations easy to follow?', 'yes_no');
+      addCustomFormQuestionRow('What topics or areas would you like more hands-on practice or review on?', 'text');
+      document.getElementById('modal-create-custom-form').classList.add('active');
+    }
+
+    function openEditCustomFormModal(formId) {
+      const form = state.customForms.find(f => f.id === formId);
+      if (!form) return;
+
+      document.getElementById('custom-form-edit-id').value = form.id;
+      document.getElementById('custom-form-modal-title').textContent = 'Edit / Update Custom Feedback Form';
+      document.getElementById('custom-form-modal-subtitle').textContent = `Update criteria and questions for ${form.courseCode} (${form.semester})`;
+      document.getElementById('custom-form-submit-btn-text').textContent = 'Save Changes & Update Form';
+
+      document.getElementById('custom-form-title').value = form.title;
+      document.getElementById('custom-form-instructions').value = form.instructions || '';
+      const courseSelect = document.getElementById('custom-form-course-select');
+      if (courseSelect) courseSelect.value = form.courseId;
+
+      const list = document.getElementById('custom-form-questions-list');
+      list.innerHTML = '';
+      if (form.questions && form.questions.length > 0) {
+        form.questions.forEach(q => {
+          addCustomFormQuestionRow(q.text, q.type);
+        });
+      } else {
+        addCustomFormQuestionRow('Course content quality', 'rating');
+      }
+
       document.getElementById('modal-create-custom-form').classList.add('active');
     }
 
@@ -2256,17 +2280,18 @@
       document.getElementById('modal-create-custom-form').classList.remove('active');
     }
 
-    function addCustomFormQuestionRow() {
+    function addCustomFormQuestionRow(defaultText = '', defaultType = 'rating') {
       const list = document.getElementById('custom-form-questions-list');
       const count = list.querySelectorAll('.custom-q-row').length + 1;
       const div = document.createElement('div');
       div.className = 'custom-q-row';
       div.style.cssText = 'display:flex; gap:0.5rem; align-items:center;';
       div.innerHTML = `
-        <input type="text" class="form-textarea" style="min-height:auto; padding:0.4rem 0.6rem; flex:2;" placeholder="Question ${count} prompt...">
+        <input type="text" class="form-textarea" style="min-height:auto; padding:0.4rem 0.6rem; flex:2;" placeholder="Question ${count} prompt..." value="${defaultText.replace(/"/g, '&quot;')}">
         <select class="form-textarea" style="min-height:auto; padding:0.4rem; flex:1;">
-          <option value="rating">Rating (1-5)</option>
-          <option value="text">Written Comment</option>
+          <option value="rating" ${defaultType === 'rating' ? 'selected' : ''}>Rating (1-5)</option>
+          <option value="yes_no" ${defaultType === 'yes_no' ? 'selected' : ''}>Yes / No</option>
+          <option value="text" ${defaultType === 'text' ? 'selected' : ''}>Written Comment</option>
         </select>
         <button type="button" class="btn-reset" onclick="removeCustomFormQuestionRow(this)" style="padding:0.4rem 0.6rem;">✕</button>
       `;
@@ -2283,6 +2308,7 @@
     }
 
     function submitCreateCustomForm() {
+      const editIdStr = document.getElementById('custom-form-edit-id').value;
       const title = document.getElementById('custom-form-title').value.trim();
       const instructions = document.getElementById('custom-form-instructions').value.trim();
       const courseId = parseInt(document.getElementById('custom-form-course-select').value);
@@ -2308,6 +2334,23 @@
         return;
       }
 
+      if (editIdStr) {
+        // Edit / Update existing form
+        const editId = parseInt(editIdStr);
+        const existingForm = state.customForms.find(f => f.id === editId);
+        if (existingForm) {
+          existingForm.title = title;
+          existingForm.instructions = instructions;
+          existingForm.questions = questions;
+          saveState();
+          closeCreateCustomFormModal();
+          renderAll();
+          showToast(`Feedback form "${title}" updated successfully!`);
+          return;
+        }
+      }
+
+      // Create new form
       const newId = (state.customForms.length > 0 ? Math.max(...state.customForms.map(f => f.id)) : 0) + 1;
       state.customForms.push({
         id: newId,
@@ -2342,11 +2385,11 @@
 
       form.questions.forEach((q, idx) => {
         const div = document.createElement('div');
-        div.style.cssText = 'background:#f8fafc; border:1px solid var(--border); border-radius:6px; padding:0.75rem;';
+        div.style.cssText = 'background:#f8fafc; border:1px solid var(--border); border-radius:6px; padding:0.85rem;';
         if (q.type === 'rating') {
           activeCustomFormRatings[q.id] = 5;
           div.innerHTML = `
-            <div style="font-weight:600; font-size:0.88rem; margin-bottom:0.4rem;">${idx + 1}. ${q.text}</div>
+            <div style="font-weight:600; font-size:0.88rem; margin-bottom:0.4rem;">${idx + 1}. ${q.text} <span class="badge-pill" style="font-size:0.7rem; padding:0.15rem 0.4rem;">Rating 1-5</span></div>
             <div class="rating-row" id="fill-rate-${q.id}">
               <div class="rating-opt" onclick="setCustomRating(${q.id}, 1)">1</div>
               <div class="rating-opt" onclick="setCustomRating(${q.id}, 2)">2</div>
@@ -2355,9 +2398,18 @@
               <div class="rating-opt selected" onclick="setCustomRating(${q.id}, 5)">5</div>
             </div>
           `;
+        } else if (q.type === 'yes_no') {
+          activeCustomFormRatings[q.id] = 'Yes';
+          div.innerHTML = `
+            <div style="font-weight:600; font-size:0.88rem; margin-bottom:0.4rem;">${idx + 1}. ${q.text} <span class="badge-pill" style="font-size:0.7rem; padding:0.15rem 0.4rem;">Yes / No</span></div>
+            <div class="rating-row" id="fill-yesno-${q.id}" style="display:flex; gap:0.5rem;">
+              <div class="rating-opt selected" id="yesno-opt-${q.id}-yes" onclick="setCustomYesNo(${q.id}, 'Yes')" style="padding:0.4rem 1.25rem; font-weight:600;">✓ Yes</div>
+              <div class="rating-opt" id="yesno-opt-${q.id}-no" onclick="setCustomYesNo(${q.id}, 'No')" style="padding:0.4rem 1.25rem; font-weight:600;">✕ No</div>
+            </div>
+          `;
         } else {
           div.innerHTML = `
-            <div style="font-weight:600; font-size:0.88rem; margin-bottom:0.4rem;">${idx + 1}. ${q.text}</div>
+            <div style="font-weight:600; font-size:0.88rem; margin-bottom:0.4rem;">${idx + 1}. ${q.text} <span class="badge-pill" style="font-size:0.7rem; padding:0.15rem 0.4rem;">Written</span></div>
             <textarea class="form-textarea" id="fill-text-${q.id}" rows="2" placeholder="Write your anonymous feedback or suggestions..."></textarea>
           `;
         }
@@ -2382,6 +2434,21 @@
       }
     }
 
+    function setCustomYesNo(qId, val) {
+      activeCustomFormRatings[qId] = val;
+      const yesBtn = document.getElementById(`yesno-opt-${qId}-yes`);
+      const noBtn = document.getElementById(`yesno-opt-${qId}-no`);
+      if (yesBtn && noBtn) {
+        if (val === 'Yes') {
+          yesBtn.classList.add('selected');
+          noBtn.classList.remove('selected');
+        } else {
+          noBtn.classList.add('selected');
+          yesBtn.classList.remove('selected');
+        }
+      }
+    }
+
     function submitFillCustomForm() {
       const formId = parseInt(document.getElementById('fill-custom-form-id').value);
       const form = state.customForms.find(f => f.id === formId);
@@ -2398,6 +2465,8 @@
       form.questions.forEach(q => {
         if (q.type === 'rating') {
           answers[q.id] = activeCustomFormRatings[q.id] || 5;
+        } else if (q.type === 'yes_no') {
+          answers[q.id] = activeCustomFormRatings[q.id] || 'Yes';
         } else {
           const el = document.getElementById('fill-text-' + q.id);
           answers[q.id] = el ? el.value.trim() : '';
@@ -2432,17 +2501,39 @@
         const div = document.createElement('div');
         div.style.cssText = 'background:#f8fafc; border:1px solid var(--border); border-radius:6px; padding:0.85rem;';
         if (q.type === 'rating') {
-          const scores = (form.responses || []).map(r => r.answers[q.id]).filter(v => v !== undefined);
+          const scores = (form.responses || []).map(r => r.answers[q.id]).filter(v => typeof v === 'number');
           const avg = scores.length > 0 ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1) : '—';
           div.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-              <div style="font-weight:600; font-size:0.88rem;">${idx + 1}. ${q.text}</div>
+              <div style="font-weight:600; font-size:0.88rem;">${idx + 1}. ${q.text} <span class="badge-pill" style="font-size:0.7rem; padding:0.15rem 0.4rem;">Rating 1-5</span></div>
               <div style="font-size:1.15rem; font-weight:700; color:var(--text);">${avg} <small style="font-size:0.75rem; color:var(--text-muted);">/ 5.0</small></div>
             </div>
             <div style="font-size:0.75rem; color:var(--text-muted);">${scores.length} ratings received</div>
           `;
+        } else if (q.type === 'yes_no') {
+          const responses = (form.responses || []).map(r => r.answers[q.id]).filter(v => v === 'Yes' || v === 'No');
+          const yesCount = responses.filter(v => v === 'Yes').length;
+          const noCount = responses.filter(v => v === 'No').length;
+          const total = responses.length;
+          const yesPct = total > 0 ? Math.round((yesCount / total) * 100) : 0;
+          const noPct = total > 0 ? Math.round((noCount / total) * 100) : 0;
+          div.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+              <div style="font-weight:600; font-size:0.88rem;">${idx + 1}. ${q.text} <span class="badge-pill" style="font-size:0.7rem; padding:0.15rem 0.4rem;">Yes / No</span></div>
+              <div style="font-size:0.95rem; font-weight:700; color:var(--text);">${yesPct}% Yes · ${noPct}% No</div>
+            </div>
+            <div style="display:flex; height:10px; border-radius:5px; overflow:hidden; background:#e2e8f0; margin-bottom:0.4rem;">
+              <div style="width:${yesPct}%; background:#10b981;"></div>
+              <div style="width:${noPct}%; background:#ef4444;"></div>
+            </div>
+            <div style="font-size:0.75rem; color:var(--text-muted); display:flex; justify-content:space-between;">
+              <span>✓ Yes: <strong>${yesCount}</strong> (${yesPct}%)</span>
+              <span>✕ No: <strong>${noCount}</strong> (${noPct}%)</span>
+              <span>Total: ${total}</span>
+            </div>
+          `;
         } else {
-          const comments = (form.responses || []).map(r => r.answers[q.id]).filter(t => t && t.trim() !== '');
+          const comments = (form.responses || []).map(r => r.answers[q.id]).filter(t => t && String(t).trim() !== '');
           let commentsHtml = '';
           if (comments.length === 0) {
             commentsHtml = '<div style="font-size:0.8rem; color:var(--text-dim); margin-top:0.4rem;">No written responses submitted yet.</div>';
@@ -2452,7 +2543,7 @@
             });
           }
           div.innerHTML = `
-            <div style="font-weight:600; font-size:0.88rem; margin-bottom:0.25rem;">${idx + 1}. ${q.text}</div>
+            <div style="font-weight:600; font-size:0.88rem; margin-bottom:0.25rem;">${idx + 1}. ${q.text} <span class="badge-pill" style="font-size:0.7rem; padding:0.15rem 0.4rem;">Written</span></div>
             <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.3rem;">${comments.length} written comment${comments.length !== 1 ? 's' : ''} (Strictly Anonymous)</div>
             ${commentsHtml}
           `;

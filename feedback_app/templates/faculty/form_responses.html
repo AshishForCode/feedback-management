@@ -61,7 +61,7 @@
     <div class="panel">
       <div class="d-flex justify-content-between align-items-start mb-3">
         <div>
-          <span class="badge text-bg-light border text-secondary mb-1">Question {{ loop.index }} · {{ 'Rating' if item.type == 'rating' else 'Written Feedback' }}</span>
+          <span class="badge text-bg-light border text-secondary mb-1">Question {{ loop.index }} · {% if item.type == 'rating' %}Rating (1-5){% elif item.type == 'yes_no' %}Yes / No{% else %}Written Feedback{% endif %}</span>
           <h3 class="fs-5 mb-0 text-dark">{{ item.question.question_text }}</h3>
         </div>
         {% if item.type == 'rating' %}
@@ -69,6 +69,11 @@
             <span class="fs-3 fw-bold text-dark">{{ item.average }}</span>
             <span class="text-muted small">/ 5.0</span>
             <div class="text-muted small">{{ item.total }} rating{{ 's' if item.total != 1 else '' }}</div>
+          </div>
+        {% elif item.type == 'yes_no' %}
+          <div class="text-end">
+            <span class="fs-5 fw-bold text-success">{{ item.yes_pct }}% Yes</span> · <span class="fs-5 fw-bold text-danger">{{ item.no_pct }}% No</span>
+            <div class="text-muted small">{{ item.total }} response{{ 's' if item.total != 1 else '' }}</div>
           </div>
         {% else %}
           <span class="badge text-bg-secondary">{{ item.total }} response{{ 's' if item.total != 1 else '' }}</span>
@@ -89,6 +94,22 @@
                 <span style="width: 70px;" class="small text-muted text-end">{{ count }} ({{ percent }}%)</span>
               </div>
             {% endfor %}
+          </div>
+        </div>
+      {% elif item.type == 'yes_no' %}
+        <div class="p-3 bg-light rounded border">
+          <div class="progress mb-2" style="height: 16px;">
+            <div class="progress-bar bg-success" role="progressbar" style="width: {{ item.yes_pct }}%;" aria-valuenow="{{ item.yes_pct }}" aria-valuemin="0" aria-valuemax="100">
+              {% if item.yes_pct > 15 %}{{ item.yes_pct }}% Yes{% endif %}
+            </div>
+            <div class="progress-bar bg-danger" role="progressbar" style="width: {{ item.no_pct }}%;" aria-valuenow="{{ item.no_pct }}" aria-valuemin="0" aria-valuemax="100">
+              {% if item.no_pct > 15 %}{{ item.no_pct }}% No{% endif %}
+            </div>
+          </div>
+          <div class="d-flex justify-content-between small text-secondary">
+            <span>✓ Yes: <strong>{{ item.yes_count }}</strong> ({{ item.yes_pct }}%)</span>
+            <span>✕ No: <strong>{{ item.no_count }}</strong> ({{ item.no_pct }}%)</span>
+            <span>Total: {{ item.total }}</span>
           </div>
         </div>
       {% else %}

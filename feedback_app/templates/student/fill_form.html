@@ -56,6 +56,17 @@
                       </label>
                     {% endfor %}
                   </div>
+                {% elif q.question_type == 'yes_no' %}
+                  <div class="d-flex gap-2" role="radiogroup" aria-label="{{ q.question_text }}">
+                    <label class="btn btn-outline-secondary px-4 py-2" style="cursor: pointer;">
+                      <input type="radio" name="question_{{ q.question_id }}" value="Yes" required class="btn-check" id="q_{{ q.question_id }}_yes">
+                      <span class="fw-bold">✓ Yes</span>
+                    </label>
+                    <label class="btn btn-outline-secondary px-4 py-2" style="cursor: pointer;">
+                      <input type="radio" name="question_{{ q.question_id }}" value="No" required class="btn-check" id="q_{{ q.question_id }}_no">
+                      <span class="fw-bold">✕ No</span>
+                    </label>
+                  </div>
                 {% else %}
                   <textarea name="question_{{ q.question_id }}" class="form-control" rows="3" maxlength="1000" placeholder="Type your constructive comments or feedback here..."></textarea>
                   <div class="form-text">Maximum 1,000 characters. Optional.</div>

@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% block title %}Edit Feedback Form — {{ form.title }}{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <div>
+    <div class="eyebrow">Faculty portal · Form Customization</div>
+    <h1>Edit Feedback Form</h1>
+    <p class="text-secondary mb-0">Update questions and criteria for <strong>{{ form.course_code }} — {{ form.course_name }} ({{ form.semester }})</strong>.</p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-8">
+    <div class="panel">
+      <form method="post" id="editForm">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Target Course & Semester</label>
+          <input class="form-control" type="text" value="{{ form.course_code }} — {{ form.course_name }} ({{ form.semester }})" disabled readonly>
+          <div class="form-text">Course assignment is locked to preserve institutional enrollment integrity.</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold" for="title">Form Title</label>
+          <input class="form-control" id="title" name="title" type="text" maxlength="150" value="{{ form.title }}" required autofocus>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-semibold" for="instructions">Instructions / Note to Students (Optional)</label>
+          <textarea class="form-control" id="instructions" name="instructions" rows="2">{{ form.instructions }}</textarea>
+        </div>
+
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+          <label class="form-label fw-semibold mb-0">Questions / Evaluation Criteria</label>
+          <button type="button" class="btn btn-sm btn-outline-primary" onclick="addQuestionRow()">
+            + Add Question
+          </button>
+        </div>
+
+        <div id="questionsContainer" class="d-flex flex-column gap-3 mb-4">
+          {% for q in questions %}
+            <div class="card p-3 question-row border bg-light">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="fw-semibold small text-secondary q-num-label">Question {{ loop.index }}</span>
+                <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 btn-remove-q" onclick="removeQuestionRow(this)">Remove</button>
+              </div>
+              <div class="row g-2">
+                <div class="col-md-8">
+                  <input type="text" name="question_text[]" class="form-control" placeholder="Enter question or feedback prompt..." value="{{ q.question_text }}" required>
+                </div>
+                <div class="col-md-4">
+                  <select name="question_type[]" class="form-select">
+                    <option value="rating" {% if q.question_type == 'rating' %}selected{% endif %}>Rating (1 to 5 Stars)</option>
+                    <option value="yes_no" {% if q.question_type == 'yes_no' %}selected{% endif %}>Yes / No</option>
+                    <option value="text" {% if q.question_type == 'text' %}selected{% endif %}>Written Comment / Text</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary">Save Changes & Update Form</button>
+          <a href="{{ url_for('faculty.dashboard') }}" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="panel">
+      <h3>About Form Customization</h3>
+      <p class="text-secondary small">
+        Faculty can customize their course feedback forms at any time:
+      </p>
+      <ul class="text-secondary small ps-3">
+        <li><strong>Rating (1-5):</strong> Computes average scores and 5-star distribution.</li>
+        <li><strong>Yes / No:</strong> Computes affirmative/negative counts and percentage splits.</li>
+        <li><strong>Written:</strong> Collects open-ended qualitative suggestions anonymously.</li>
+        <li>Updates apply immediately to newly submitted evaluations.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+function updateQuestionNumbers() {
+  const rows = document.querySelectorAll('.question-row');
+  rows.forEach((row, index) => {
+    row.querySelector('.q-num-label').textContent = 'Question ' + (index + 1);
+  });
+  const removeButtons = document.querySelectorAll('.btn-remove-q');
+  removeButtons.forEach(btn => {
+    btn.disabled = rows.length <= 1;
+  });
+}
+
+function addQuestionRow() {
+  const container = document.getElementById('questionsContainer');
+  const count = container.querySelectorAll('.question-row').length + 1;
+  const card = document.createElement('div');
+  card.className = 'card p-3 question-row border bg-light';
+  card.innerHTML = `
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <span class="fw-semibold small text-secondary q-num-label">Question ${count}</span>
+      <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 btn-remove-q" onclick="removeQuestionRow(this)">Remove</button>
+    </div>
+    <div class="row g-2">
+      <div class="col-md-8">
+        <input type="text" name="question_text[]" class="form-control" placeholder="Enter question or feedback prompt..." required>
+      </div>
+      <div class="col-md-4">
+        <select name="question_type[]" class="form-select">
+          <option value="rating" selected>Rating (1 to 5 Stars)</option>
+          <option value="yes_no">Yes / No</option>
+          <option value="text">Written Comment / Text</option>
+        </select>
+      </div>
+    </div>
+  `;
+  container.appendChild(card);
+  updateQuestionNumbers();
+}
+
+function removeQuestionRow(btn) {
+  const container = document.getElementById('questionsContainer');
+  if (container.querySelectorAll('.question-row').length > 1) {
+    btn.closest('.question-row').remove();
+    updateQuestionNumbers();
+  }
+}
+
+document.addEventListener('DOMContentLoaded', updateQuestionNumbers);
+</script>
+{% endblock %}

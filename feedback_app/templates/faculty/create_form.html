@@ -56,6 +56,7 @@
               <div class="col-md-4">
                 <select name="question_type[]" class="form-select">
                   <option value="rating" selected>Rating (1 to 5 Stars)</option>
+                  <option value="yes_no">Yes / No</option>
                   <option value="text">Written Comment / Text</option>
                 </select>
               </div>
@@ -70,11 +71,12 @@
             </div>
             <div class="row g-2">
               <div class="col-md-8">
-                <input type="text" name="question_text[]" class="form-control" placeholder="e.g. How effectively does the instructor answer student doubts?" value="How effective and engaging are the lectures and practical sessions?" required>
+                <input type="text" name="question_text[]" class="form-control" placeholder="e.g. Was the textbook required for assignments?" value="Were practical lab demonstrations and explanations easy to follow?" required>
               </div>
               <div class="col-md-4">
                 <select name="question_type[]" class="form-select">
-                  <option value="rating" selected>Rating (1 to 5 Stars)</option>
+                  <option value="rating">Rating (1 to 5 Stars)</option>
+                  <option value="yes_no" selected>Yes / No</option>
                   <option value="text">Written Comment / Text</option>
                 </select>
               </div>
@@ -94,6 +96,7 @@
               <div class="col-md-4">
                 <select name="question_type[]" class="form-select">
                   <option value="rating">Rating (1 to 5 Stars)</option>
+                  <option value="yes_no">Yes / No</option>
                   <option value="text" selected>Written Comment / Text</option>
                 </select>
               </div>
@@ -119,7 +122,8 @@
         <li>Enrolled students in the selected course will immediately see this form on their dashboard.</li>
         <li>Students can submit their evaluation anonymously once.</li>
         <li>You will be able to review calculated averages and read responses without any student identities attached.</li>
-        <li>You can close or reopen responses at any point.</li>
+        <li>Supports <strong>Rating (1-5)</strong>, <strong>Yes / No</strong>, and <strong>Written comments</strong>.</li>
+        <li>You can edit questions, close, or reopen responses at any point.</li>
       </ul>
     </div>
   </div>
@@ -154,6 +158,7 @@ function addQuestionRow() {
       <div class="col-md-4">
         <select name="question_type[]" class="form-select">
           <option value="rating" selected>Rating (1 to 5 Stars)</option>
+          <option value="yes_no">Yes / No</option>
           <option value="text">Written Comment / Text</option>
         </select>
       </div>
