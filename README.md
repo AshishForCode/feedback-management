@@ -81,9 +81,16 @@ erDiagram
 
 ## 3. Backend and Authentication
 
-Authentication uses Werkzeug password hashing and Flask-Login's signed session cookie. Login is required for role routes, and the role decorator rejects cross-role requests with HTTP 403. Every state-changing form is protected by Flask-WTF CSRF tokens. SQL values use placeholders; HTML output is auto-escaped by Jinja. The database uniqueness constraint is the final guard against duplicate feedback, even if two submissions race.
+Authentication uses Werkzeug password hashing (PBKDF2/Scrypt) and Flask-Login's signed session cookies. Key features include:
 
-Student self-registration creates only a student account. The administrator creates faculty accounts and assigns students to courses. Feedback is anonymous to faculty: faculty queries use course-assignment IDs and never select the submitting student's identity. Administrators can see student identity in the all-feedback report.
+- **Role-Based Access Control (RBAC):** Authenticated users belong to one of three roles: `student`, `faculty`, or `admin`. Access is strictly enforced via the `@role_required` decorator; unauthorized attempts return HTTP 403 Forbidden.
+- **1-Click Quick Demo Sign-In:** Both the Flask application (`/auth/login`) and the GitHub Pages live showcase (`index.html`) feature 1-click demo credentials autofill for Student, Faculty, and Admin personas.
+- **Session Persistence ("Remember Me"):** Optional session cookie extension supported by Flask-Login.
+- **Password Visibility Toggles:** Interactive eye icons on login and registration password inputs for enhanced user convenience.
+- **CSRF Protection:** Every state-changing form is protected by Flask-WTF CSRF tokens.
+- **Account State Verification:** Inactive or suspended accounts are detected during credential verification and blocked with clear feedback.
+- **Strict Anonymity:** Faculty queries join feedback records through `course_assignments` and deliberately omit student identifiers from SQL `SELECT` clauses.
+- **Self-Registration:** Enrolled students can self-register (`/auth/register`), creating validated student accounts with hashed credentials. Faculty and admin accounts are provisioned by an administrator.
 
 ## 4. Frontend
 

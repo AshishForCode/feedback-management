@@ -54,13 +54,17 @@ def login():
     if request.method == "POST":
         email = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "")
+        remember = bool(request.form.get("remember"))
         row = get_db().execute(
-            "SELECT * FROM users WHERE email = ? AND is_active = 1", (email,)
+            "SELECT * FROM users WHERE email = ?", (email,)
         ).fetchone()
         if row is None or not check_password_hash(row["password_hash"], password):
             flash("Email or password is incorrect.", "danger")
+        elif not row["is_active"]:
+            flash("This account has been deactivated. Please contact an administrator.", "warning")
         else:
-            login_user(User(row))
+            login_user(User(row), remember=remember)
+            flash(f"Welcome back, {row['full_name']}!", "success")
             return redirect(_safe_next_url(request.args.get("next")) or url_for(_dashboard_endpoint(row["role"])))
     return render_template("auth/login.html")
 

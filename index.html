@@ -769,7 +769,204 @@
       .nav-links { display: none; }
       .rating-row { flex-wrap: wrap; }
       .rating-opt { min-width: 45px; }
+      .sim-meta { width: 100%; justify-content: flex-start; }
+      .auth-portal-card { padding: 1.25rem; }
     }
+
+    /* Auth Portal & Simulation Components */
+    .auth-portal-card {
+      max-width: 520px;
+      margin: 1rem auto 2rem;
+      background: rgba(13, 21, 38, 0.95);
+      border: 1px solid rgba(16, 185, 129, 0.28);
+      border-radius: var(--radius);
+      padding: 2.2rem;
+      box-shadow: 0 25px 50px -10px rgba(0, 0, 0, 0.75), 0 0 35px rgba(16, 185, 129, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+    .auth-portal-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent), var(--cyan));
+    }
+    .auth-portal-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .auth-portal-header h3 {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 0.35rem;
+    }
+    .auth-portal-header p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+    .demo-quick-bar {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px dashed rgba(16, 185, 129, 0.35);
+      border-radius: var(--radius-sm);
+      padding: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+    .demo-quick-title {
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: #34d399;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .demo-quick-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.35rem;
+    }
+    .demo-quick-chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: #e5e7eb;
+      font-size: 0.82rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s ease;
+      font-weight: 600;
+    }
+    .demo-quick-chip:hover {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: var(--primary);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+    .auth-tabs-toggle {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1.25rem;
+      gap: 0.5rem;
+    }
+    .auth-tab-item {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-muted);
+      font-family: var(--font-sans);
+      font-size: 0.92rem;
+      font-weight: 600;
+      padding: 0.6rem 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .auth-tab-item.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+    .auth-input-group {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .auth-input-group input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: #fff;
+      padding: 0.75rem 2.6rem 0.75rem 0.85rem;
+      font-family: inherit;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+    }
+    .auth-input-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 15px var(--primary-glow);
+    }
+    .auth-input-group .auth-toggle-pw {
+      position: absolute;
+      right: 0.75rem;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.05rem;
+      padding: 0.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .auth-input-group .auth-toggle-pw:hover {
+      color: #fff;
+    }
+    .auth-alert-box {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      padding: 0.75rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.84rem;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    .btn-signout {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #fca5a5;
+      padding: 0.38rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.2s ease;
+    }
+    .btn-signout:hover {
+      background: var(--rose);
+      color: white;
+      border-color: var(--rose);
+    }
+    .btn-auth-switch {
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      color: #a5b4fc;
+      padding: 0.38rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.2s ease;
+    }
+    .btn-auth-switch:hover {
+      background: var(--accent);
+      color: white;
+    }
+    .role-badge-pill {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+    }
+    .role-badge-student { background: rgba(59, 130, 246, 0.2); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.3); }
+    .role-badge-faculty { background: rgba(168, 85, 247, 0.2); color: #d8b4fe; border: 1px solid rgba(168, 85, 247, 0.3); }
+    .role-badge-admin { background: rgba(245, 158, 11, 0.2); color: #fde68a; border: 1px solid rgba(245, 158, 11, 0.3); }
   </style>
 </head>
 <body>
@@ -839,19 +1036,144 @@
     <div id="tab-demo" class="simulator-box">
       <div class="sim-header">
         <div class="role-switcher">
-          <span style="font-size:0.75rem; color:var(--text-dim); text-transform:uppercase; font-weight:700; padding:0 0.4rem;">Role:</span>
-          <button class="role-btn active" id="btn-role-student" onclick="setRole('student')">🎓 Student</button>
-          <button class="role-btn" id="btn-role-faculty" onclick="setRole('faculty')">👨‍🏫 Faculty</button>
-          <button class="role-btn" id="btn-role-admin" onclick="setRole('admin')">🛡️ Admin</button>
+          <span style="font-size:0.75rem; color:var(--text-dim); text-transform:uppercase; font-weight:700; padding:0 0.4rem;">Portal:</span>
+          <button class="role-btn active" id="btn-role-student" onclick="handleRoleClick('student')">🎓 Student</button>
+          <button class="role-btn" id="btn-role-faculty" onclick="handleRoleClick('faculty')">👨‍🏫 Faculty</button>
+          <button class="role-btn" id="btn-role-admin" onclick="handleRoleClick('admin')">🛡️ Admin</button>
         </div>
-        <div class="sim-meta">
-          <span class="sim-user-tag" id="current-user-tag">student@feedback.local (John Doe)</span>
-          <button class="btn-reset" onclick="resetDemoData()" title="Reset local database simulation">Reset Demo Data</button>
+        <div class="sim-meta" id="sim-meta-bar">
+          <div id="sim-user-display" style="display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
+            <span class="sim-user-tag" id="current-user-tag">
+              <span id="tag-role-pill" class="role-badge-pill role-badge-student">Student</span>
+              <span id="tag-user-text">student@feedback.local (John Doe)</span>
+            </span>
+            <button class="btn-auth-switch" id="btn-switch-account" onclick="openAuthModal()" title="Switch user account or sign in">
+              <span>⇄ Switch User</span>
+            </button>
+            <button class="btn-signout" id="btn-sim-signout" onclick="logoutSim()" title="Log out of the current session">
+              <span>Sign Out</span>
+            </button>
+          </div>
+          <button class="btn-reset" onclick="resetDemoData()" title="Reset local database simulation">Reset Data</button>
         </div>
       </div>
 
       <div class="sim-body">
         
+        <!-- AUTH VIEW (When signed out or switching user) -->
+        <div id="view-auth" class="view-container">
+          <div class="auth-portal-card">
+            <div class="auth-portal-header">
+              <div style="font-size:2.2rem; margin-bottom:0.4rem;">🔐</div>
+              <h3>Campus Authentication Portal</h3>
+              <p>Sign in to access your role-based evaluations and institutional reports.</p>
+            </div>
+
+            <!-- Quick Demo Credentials -->
+            <div class="demo-quick-bar">
+              <div class="demo-quick-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                <span>1-Click Demo Quick Sign-In</span>
+              </div>
+              <div class="demo-quick-chips">
+                <button type="button" class="demo-quick-chip" onclick="quickDemoLogin('student')">
+                  <span class="role-badge-pill role-badge-student">Student</span> John Doe
+                </button>
+                <button type="button" class="demo-quick-chip" onclick="quickDemoLogin('faculty')">
+                  <span class="role-badge-pill role-badge-faculty">Faculty</span> Dr. Alan Turing
+                </button>
+                <button type="button" class="demo-quick-chip" onclick="quickDemoLogin('admin')">
+                  <span class="role-badge-pill role-badge-admin">Admin</span> Administrator
+                </button>
+              </div>
+              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:0.3rem;">Default credentials password: <code>DemoPass123!</code></div>
+            </div>
+
+            <!-- Tabs: Login vs Register -->
+            <div class="auth-tabs-toggle">
+              <button class="auth-tab-item active" id="tab-btn-signin" onclick="switchAuthTab('signin')">Sign In</button>
+              <button class="auth-tab-item" id="tab-btn-register" onclick="switchAuthTab('register')">Student Register</button>
+            </div>
+
+            <div id="auth-alert-msg" class="auth-alert-box"></div>
+
+            <!-- Sign In Form -->
+            <form id="form-sim-login" onsubmit="handleSimLogin(event)">
+              <div class="form-group">
+                <label class="form-label" for="sim-input-email">Email Address</label>
+                <div class="auth-input-group">
+                  <input type="email" id="sim-input-email" placeholder="student@feedback.local" required autocomplete="username">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="sim-input-password">Password</label>
+                <div class="auth-input-group">
+                  <input type="password" id="sim-input-password" placeholder="••••••••" required autocomplete="current-password">
+                  <button type="button" class="auth-toggle-pw" onclick="toggleAuthPassword('sim-input-password', this)" title="Show/Hide Password">👁️</button>
+                </div>
+              </div>
+
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; font-size:0.85rem; color:var(--text-muted); flex-wrap:wrap; gap:0.5rem;">
+                <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; user-select:none;">
+                  <input type="checkbox" id="sim-remember-me" checked>
+                  <span>Remember session</span>
+                </label>
+                <span style="color:#34d399; cursor:pointer;" onclick="quickDemoLogin('student')">Autofill Demo</span>
+              </div>
+
+              <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:0.85rem;">
+                <span>Sign In to Dashboard</span>
+              </button>
+            </form>
+
+            <!-- Student Register Form -->
+            <form id="form-sim-register" style="display:none;" onsubmit="handleSimRegister(event)">
+              <div class="form-group">
+                <label class="form-label" for="sim-reg-name">Full Name</label>
+                <div class="auth-input-group">
+                  <input type="text" id="sim-reg-name" placeholder="e.g. Maya Lin" required>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="sim-reg-email">College Email Address</label>
+                <div class="auth-input-group">
+                  <input type="email" id="sim-reg-email" placeholder="maya@feedback.local" required>
+                </div>
+              </div>
+
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+                <div class="form-group">
+                  <label class="form-label" for="sim-reg-num">Student ID / Roll</label>
+                  <div class="auth-input-group">
+                    <input type="text" id="sim-reg-num" placeholder="STU2024099" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="sim-reg-dept">Department</label>
+                  <div class="auth-input-group">
+                    <input type="text" id="sim-reg-dept" placeholder="Computer Science" required>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="sim-reg-password">Password (min 8 characters)</label>
+                <div class="auth-input-group">
+                  <input type="password" id="sim-reg-password" minlength="8" placeholder="••••••••" required>
+                  <button type="button" class="auth-toggle-pw" onclick="toggleAuthPassword('sim-reg-password', this)" title="Show/Hide Password">👁️</button>
+                </div>
+              </div>
+
+              <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:0.85rem; margin-top:0.5rem;">
+                <span>Register & Open Dashboard</span>
+              </button>
+            </form>
+
+          </div>
+        </div>
+
         <!-- STUDENT VIEW -->
         <div id="view-student" class="view-container active">
           <div class="banner-card">
@@ -1139,6 +1461,26 @@ python run.py</div>
     </div>
   </div>
 
+  <!-- RBAC Unauthorized Modal -->
+  <div class="modal-overlay" id="rbac-modal">
+    <div class="modal-card" style="max-width: 480px; text-align: center;">
+      <div style="font-size: 2.8rem; margin-bottom: 0.5rem;">⛔</div>
+      <h3 style="color: #ef4444; font-size: 1.35rem; margin-bottom: 0.5rem;">403 Forbidden: Role Restriction</h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;" id="rbac-modal-text">
+        You are currently signed in as a Student. Accessing this dashboard requires the appropriate role authorization.
+      </p>
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <button class="btn-primary" id="rbac-switch-btn" onclick="rbacSwitchRole()" style="justify-content: center;">
+          <span id="rbac-switch-btn-text">Switch Account & Sign In</span>
+        </button>
+        <button class="btn-secondary" onclick="closeRbacModal()" style="justify-content: center;">
+          <span>Keep Current Session</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+
   <!-- Toast Notification -->
   <div class="toast-box" id="toast">
     <span>✓</span>
@@ -1156,8 +1498,44 @@ python run.py</div>
   </footer>
 
   <script>
-    // Initial Seed Data
+    // Initial Seed Data with Normalized Users and Demonstration Accounts
     const INITIAL_STATE = {
+      users: [
+        {
+          id: 1,
+          email: 'admin@feedback.local',
+          password: 'DemoPass123!',
+          fullName: 'System Administrator',
+          role: 'admin',
+          department: 'Academic Registry'
+        },
+        {
+          id: 2,
+          email: 'faculty@feedback.local',
+          password: 'DemoPass123!',
+          fullName: 'Dr. Alan Turing',
+          role: 'faculty',
+          employeeNumber: 'FAC-001',
+          department: 'Computer Science'
+        },
+        {
+          id: 3,
+          email: 'student@feedback.local',
+          password: 'DemoPass123!',
+          fullName: 'John Doe',
+          role: 'student',
+          studentNumber: 'STU2024001',
+          department: 'Computer Science'
+        }
+      ],
+      currentUser: {
+        id: 3,
+        email: 'student@feedback.local',
+        fullName: 'John Doe',
+        role: 'student',
+        studentNumber: 'STU2024001',
+        department: 'Computer Science'
+      },
       courses: [
         { id: 1, code: 'CS101', title: 'Introduction to Computer Science', faculty: 'Dr. Alan Turing', semester: '2026-Fall', credits: 4 },
         { id: 2, code: 'CS201', title: 'Data Structures & Algorithms', faculty: 'Prof. Ada Lovelace', semester: '2026-Fall', credits: 4 },
@@ -1257,13 +1635,19 @@ python run.py</div>
 
     // Local state management
     let state = loadState();
-    let currentRole = 'student';
+    let currentRole = state.currentUser ? state.currentUser.role : 'student';
     let currentRatings = { content: 5, teaching: 5, overall: 5 };
+    let pendingRbacRole = null;
 
     function loadState() {
       const saved = localStorage.getItem('feedback_sim_state');
       if (saved) {
-        try { return JSON.parse(saved); } catch(e) {}
+        try {
+          const parsed = JSON.parse(saved);
+          if (!parsed.users) parsed.users = JSON.parse(JSON.stringify(INITIAL_STATE.users));
+          if (parsed.currentUser === undefined) parsed.currentUser = JSON.parse(JSON.stringify(INITIAL_STATE.currentUser));
+          return parsed;
+        } catch(e) {}
       }
       return JSON.parse(JSON.stringify(INITIAL_STATE));
     }
@@ -1276,6 +1660,12 @@ python run.py</div>
       if (confirm('Reset demo state back to default seed records?')) {
         localStorage.removeItem('feedback_sim_state');
         state = JSON.parse(JSON.stringify(INITIAL_STATE));
+        updateAuthHeaderUI();
+        if (state.currentUser) {
+          setRole(state.currentUser.role);
+        } else {
+          openAuthModal();
+        }
         renderAll();
         showToast('Demo data reset to original seed state!');
       }
@@ -1291,20 +1681,198 @@ python run.py</div>
       });
     }
 
+    /* Authentication & Role-Based Access Control Simulation */
+    function updateAuthHeaderUI() {
+      const user = state.currentUser;
+      const tagRolePill = document.getElementById('tag-role-pill');
+      const tagUserText = document.getElementById('tag-user-text');
+      const btnLogout = document.getElementById('btn-sim-signout');
+      const btnSwitch = document.getElementById('btn-switch-account');
+
+      if (user) {
+        tagRolePill.textContent = user.role.toUpperCase();
+        tagRolePill.className = `role-badge-pill role-badge-${user.role}`;
+        tagUserText.textContent = `${user.email} (${user.fullName})`;
+        btnLogout.style.display = 'inline-flex';
+        btnSwitch.innerHTML = '<span>⇄ Switch User</span>';
+        
+        document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+        const activeBtn = document.getElementById('btn-role-' + user.role);
+        if (activeBtn) activeBtn.classList.add('active');
+      } else {
+        tagRolePill.textContent = 'GUEST';
+        tagRolePill.className = 'role-badge-pill';
+        tagRolePill.style.background = 'rgba(255,255,255,0.1)';
+        tagRolePill.style.color = '#9ca3af';
+        tagUserText.textContent = 'Not signed in';
+        btnLogout.style.display = 'none';
+        btnSwitch.innerHTML = '<span>🔐 Sign In / Register</span>';
+        document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+      }
+    }
+
     function setRole(role) {
       currentRole = role;
       document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById('btn-role-' + role).classList.add('active');
+      const btn = document.getElementById('btn-role-' + role);
+      if (btn) btn.classList.add('active');
 
       document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
-      document.getElementById('view-' + role).classList.add('active');
-
-      const tag = document.getElementById('current-user-tag');
-      if (role === 'student') tag.textContent = 'student@feedback.local (John Doe)';
-      else if (role === 'faculty') tag.textContent = 'faculty@feedback.local (Dr. Alan Turing)';
-      else tag.textContent = 'admin@feedback.local (System Admin)';
+      const targetView = document.getElementById('view-' + role);
+      if (targetView) targetView.classList.add('active');
 
       renderAll();
+    }
+
+    function handleRoleClick(targetRole) {
+      if (!state.currentUser) {
+        quickDemoLogin(targetRole);
+        return;
+      }
+      if (state.currentUser.role === targetRole) {
+        setRole(targetRole);
+        return;
+      }
+      // Role Mismatch -> Trigger RBAC 403 modal
+      pendingRbacRole = targetRole;
+      const roleLabels = {
+        student: 'Student (John Doe)',
+        faculty: 'Faculty (Dr. Alan Turing)',
+        admin: 'Admin (System Administrator)'
+      };
+      document.getElementById('rbac-modal-text').innerHTML = `
+        You are currently signed in as <strong>${state.currentUser.fullName}</strong> (${state.currentUser.role.toUpperCase()}).<br><br>
+        Access to the <strong>${targetRole.toUpperCase()}</strong> portal is restricted by Flask's <code>@role_required('${targetRole}')</code> decorator.<br>
+        Please switch to an account with the <code>${targetRole}</code> role to access this area.
+      `;
+      document.getElementById('rbac-switch-btn-text').textContent = `Switch to ${roleLabels[targetRole]}`;
+      document.getElementById('rbac-modal').classList.add('active');
+    }
+
+    function rbacSwitchRole() {
+      if (pendingRbacRole) {
+        const role = pendingRbacRole;
+        closeRbacModal();
+        quickDemoLogin(role);
+      }
+    }
+
+    function closeRbacModal() {
+      document.getElementById('rbac-modal').classList.remove('active');
+      pendingRbacRole = null;
+    }
+
+    function openAuthModal() {
+      document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
+      document.getElementById('view-auth').classList.add('active');
+      document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+    }
+
+    function switchAuthTab(tab) {
+      const isSignIn = tab === 'signin';
+      document.getElementById('tab-btn-signin').classList.toggle('active', isSignIn);
+      document.getElementById('tab-btn-register').classList.toggle('active', !isSignIn);
+      document.getElementById('form-sim-login').style.display = isSignIn ? 'block' : 'none';
+      document.getElementById('form-sim-register').style.display = isSignIn ? 'none' : 'block';
+      hideAuthAlert();
+    }
+
+    function showAuthAlert(msg) {
+      const box = document.getElementById('auth-alert-msg');
+      box.textContent = msg;
+      box.style.display = 'block';
+    }
+
+    function hideAuthAlert() {
+      const box = document.getElementById('auth-alert-msg');
+      box.style.display = 'none';
+    }
+
+    function toggleAuthPassword(fieldId, btn) {
+      const input = document.getElementById(fieldId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+      } else {
+        input.type = 'password';
+        btn.textContent = '👁️';
+      }
+    }
+
+    function quickDemoLogin(role) {
+      const user = state.users.find(u => u.role === role);
+      if (!user) return;
+      state.currentUser = user;
+      saveState();
+      updateAuthHeaderUI();
+      setRole(role);
+      showToast(`Signed in as ${user.fullName} (${user.role.toUpperCase()})`);
+      hideAuthAlert();
+    }
+
+    function handleSimLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('sim-input-email').value.trim().toLowerCase();
+      const password = document.getElementById('sim-input-password').value;
+
+      const user = state.users.find(u => u.email.toLowerCase() === email);
+      if (!user || user.password !== password) {
+        showAuthAlert('Invalid email or password. Hint: Default demo password is "DemoPass123!".');
+        return;
+      }
+
+      state.currentUser = user;
+      saveState();
+      updateAuthHeaderUI();
+      setRole(user.role);
+      showToast(`Welcome back, ${user.fullName}!`);
+      hideAuthAlert();
+    }
+
+    function handleSimRegister(e) {
+      e.preventDefault();
+      const fullName = document.getElementById('sim-reg-name').value.trim();
+      const email = document.getElementById('sim-reg-email').value.trim().toLowerCase();
+      const studentNumber = document.getElementById('sim-reg-num').value.trim();
+      const department = document.getElementById('sim-reg-dept').value.trim();
+      const password = document.getElementById('sim-reg-password').value;
+
+      if (password.length < 8) {
+        showAuthAlert('Password must be at least 8 characters.');
+        return;
+      }
+
+      if (state.users.some(u => u.email.toLowerCase() === email)) {
+        showAuthAlert('An account with that email already exists.');
+        return;
+      }
+
+      const newId = (state.users.length > 0 ? Math.max(...state.users.map(u => u.id)) : 0) + 1;
+      const newUser = {
+        id: newId,
+        email: email,
+        password: password,
+        fullName: fullName,
+        role: 'student',
+        studentNumber: studentNumber,
+        department: department
+      };
+
+      state.users.push(newUser);
+      state.currentUser = newUser;
+      saveState();
+      updateAuthHeaderUI();
+      setRole('student');
+      showToast(`Registration complete! Welcome, ${fullName}.`);
+      hideAuthAlert();
+    }
+
+    function logoutSim() {
+      state.currentUser = null;
+      saveState();
+      updateAuthHeaderUI();
+      openAuthModal();
+      showToast('Logged out successfully.');
     }
 
     function renderAll() {
@@ -1315,11 +1883,19 @@ python run.py</div>
 
     /* Student View Logic */
     function renderStudentView() {
+      const currentStudentId = (state.currentUser && state.currentUser.role === 'student' && state.currentUser.studentNumber) ? state.currentUser.studentNumber : 'STU2024001';
+      const currentStudentName = (state.currentUser && state.currentUser.role === 'student') ? state.currentUser.fullName : 'John Doe';
+      
+      const bannerH3 = document.querySelector('#view-student .banner-card h3');
+      if (bannerH3) {
+        bannerH3.textContent = `Welcome, ${currentStudentName} (${currentStudentId})`;
+      }
+
       const container = document.getElementById('student-courses-grid');
       container.innerHTML = '';
 
       state.courses.forEach(c => {
-        const feedback = state.feedbacks.find(f => f.studentId === 'STU2024001' && f.courseId === c.id);
+        const feedback = state.feedbacks.find(f => f.studentId === currentStudentId && f.courseId === c.id);
         const card = document.createElement('div');
         card.className = 'course-card';
 
@@ -1358,7 +1934,7 @@ python run.py</div>
 
       // Render student history
       const historyBody = document.getElementById('student-history-body');
-      const studentFeedbacks = state.feedbacks.filter(f => f.studentId === 'STU2024001');
+      const studentFeedbacks = state.feedbacks.filter(f => f.studentId === currentStudentId);
       historyBody.innerHTML = '';
 
       if (studentFeedbacks.length === 0) {
@@ -1507,18 +2083,20 @@ python run.py</div>
           showToast('Feedback updated successfully!');
         }
       } else {
-        // Create new (Check duplicate)
-        const duplicate = state.feedbacks.some(f => f.studentId === 'STU2024001' && f.courseId === courseId && f.semester === '2026-Fall');
+        // Create new (Check duplicate against current student session)
+        const studentId = (state.currentUser && state.currentUser.role === 'student' && state.currentUser.studentNumber) ? state.currentUser.studentNumber : 'STU2024001';
+        const studentName = (state.currentUser && state.currentUser.role === 'student') ? state.currentUser.fullName : 'John Doe';
+        const duplicate = state.feedbacks.some(f => f.studentId === studentId && f.courseId === courseId && f.semester === '2026-Fall');
         if (duplicate) {
-          alert('Error: You have already submitted feedback for this course and semester (UNIQUE constraint enforced).');
+          alert('Error: You have already submitted feedback for this course and semester (UNIQUE composite constraint enforced).');
           return;
         }
 
         const newId = (state.feedbacks.length > 0 ? Math.max(...state.feedbacks.map(f => f.id)) : 0) + 1;
         state.feedbacks.push({
           id: newId,
-          studentId: 'STU2024001',
-          studentName: 'John Doe',
+          studentId: studentId,
+          studentName: studentName,
           courseId: course.id,
           courseCode: course.code,
           facultyName: course.faculty,
@@ -1592,6 +2170,12 @@ python run.py</div>
 
     // Init Page
     window.addEventListener('DOMContentLoaded', () => {
+      updateAuthHeaderUI();
+      if (state.currentUser) {
+        setRole(state.currentUser.role);
+      } else {
+        openAuthModal();
+      }
       renderAll();
       initViva();
     });
