@@ -860,27 +860,32 @@
     <!-- Simulator Box -->
     <div id="tab-demo" class="simulator-box">
       <div class="sim-header">
-        <div class="role-switcher" id="portal-role-switcher" style="display:none;">
-          <span style="font-size:0.75rem; color:var(--text-dim); text-transform:uppercase; font-weight:700; padding:0 0.4rem;">Portal:</span>
-          <button class="role-btn" id="btn-role-student" onclick="handleRoleClick('student')">🎓 Student</button>
-          <button class="role-btn" id="btn-role-faculty" onclick="handleRoleClick('faculty')">👨‍🏫 Faculty</button>
-          <button class="role-btn" id="btn-role-admin" onclick="handleRoleClick('admin')">🛡️ Admin</button>
-        </div>
-        <div id="auth-locked-indicator" style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; font-weight:600; color:var(--text-muted);">
-          <span>🔐 Campus Feedback System · Sign In to Enter</span>
-        </div>
-        <div class="sim-meta" id="sim-meta-bar">
+        <!-- LEFT CORNER: Current User Profile Tag & Session Controls -->
+        <div class="sim-profile-left" style="display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
           <div id="sim-user-display" style="display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
             <span class="sim-user-tag" id="current-user-tag">
               <span id="tag-role-pill" class="role-badge-pill" style="background:#e2e8f0; color:#475569;">LOCKED</span>
               <span id="tag-user-text">Not logged in (Sign in required)</span>
             </span>
             <button class="btn-auth-switch" id="btn-switch-account" onclick="openAuthModal()" style="display:none;" title="Sign in or register">
-              <span>🔐 Sign In / Register</span>
+              <span>🔐 Switch Account</span>
             </button>
             <button class="btn-signout" id="btn-sim-signout" onclick="logoutSim()" style="display:none;" title="Log out of the current session">
               <span>Sign Out</span>
             </button>
+          </div>
+          <div id="auth-locked-indicator" style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; font-weight:600; color:var(--text-muted);">
+            <span>🔐 Campus Feedback System · Sign In to Enter</span>
+          </div>
+        </div>
+
+        <!-- RIGHT CORNER: Portal Switcher & Reset Data -->
+        <div class="sim-controls-right" style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+          <div class="role-switcher" id="portal-role-switcher" style="display:none;">
+            <span style="font-size:0.75rem; color:var(--text-dim); text-transform:uppercase; font-weight:700; padding:0 0.4rem;">Portal:</span>
+            <button class="role-btn" id="btn-role-student" onclick="handleRoleClick('student')">🎓 Student</button>
+            <button class="role-btn" id="btn-role-faculty" onclick="handleRoleClick('faculty')">👨‍🏫 Faculty</button>
+            <button class="role-btn" id="btn-role-admin" onclick="handleRoleClick('admin')">🛡️ Admin</button>
           </div>
           <button class="btn-reset" onclick="resetDemoData()" title="Reset local database simulation">Reset Data</button>
         </div>

@@ -10,10 +10,18 @@
 <body>
   <nav class="navbar navbar-expand-lg site-nav">
     <div class="container">
-      <a class="navbar-brand" href="{{ url_for('index') }}">Feedback Management</a>
-      <div class="d-flex align-items-center gap-2">
+      <div class="d-flex align-items-center gap-3">
+        <a class="navbar-brand m-0" href="{{ url_for('index') }}">Feedback Management</a>
         {% if current_user.is_authenticated %}
-          <span class="nav-user">{{ current_user.full_name }} ({{ current_user.role|title }})</span>
+          <span class="nav-user d-inline-flex align-items-center gap-1 badge bg-light text-dark border px-2 py-1">
+            <span>👤</span>
+            <strong>{{ current_user.full_name }}</strong>
+            <span class="badge bg-secondary ms-1">{{ current_user.role|title }}</span>
+          </span>
+        {% endif %}
+      </div>
+      <div class="d-flex align-items-center gap-2 ms-auto">
+        {% if current_user.is_authenticated %}
           {% if current_user.role == 'admin' %}
             <a class="nav-link" href="{{ url_for('admin.reports') }}">Reports</a>
           {% endif %}
