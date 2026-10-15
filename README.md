@@ -200,9 +200,9 @@ Automated checks cover the main workflows in `tests/test_app.py`. CSRF is enable
 
 - **Abstract:** A role-based web system for collecting and summarizing anonymous feedback on courses and faculty.
 - **Objectives:** Secure accounts, structured 1-5 ratings, anonymous faculty views, admin oversight, and downloadable aggregate reports.
-- **System design:** Flask request/response flow, Jinja presentation layer, role-based routes, normalized SQLite schema, and foreign-key relationships.
+- **System design:** 3-layer architecture (Presentation Blueprints, Domain Services, and Data Repositories), Flask app factory with environment configs (`config.py`), Jinja layout, role-based routes, normalized SQLite schema, and foreign-key relationships.
 - **Modules:** Authentication, student enrollment and feedback, faculty dashboards, admin management, and report/CSV generation.
-- **Future scope:** MySQL deployment, email verification/password reset, configurable survey questions, semester scheduling, pagination, charts, and audit logging.
+- **Future scope:** MySQL/PostgreSQL migration via SQLAlchemy & Alembic, email verification/password reset, semester scheduling, pagination, charts, and audit logging.
 
 ## 8. Likely Viva Questions
 
@@ -216,6 +216,10 @@ Automated checks cover the main workflows in `tests/test_app.py`. CSRF is enable
 8. **How does the schema reach 3NF?** Profiles, courses, enrollments, assignments, and feedback each store facts in the table keyed by their own entity or relationship.
 9. **How are report averages calculated?** SQL groups feedback by course, faculty, or semester and averages the three 1-5 rating dimensions.
 10. **What does the feedback edit window do?** It allows the author to change or delete a submission for 24 hours after creation; the duration is controlled by `FEEDBACK_EDIT_HOURS`.
+11. **Why adopt a 3-Layer Architecture (Presentation, Service, Repository)?** It decouples HTTP routing from database queries and domain rules. Routes stay thin, queries can be tested or swapped without touching views, and business rules (e.g. 24h edit window, rating validation) can be reused across CLI commands or future REST APIs.
+12. **How is CSV formula injection prevented?** Cells beginning with formula triggers (`=`, `+`, `-`, `@`) are automatically prepended with a single quote (`'`) in `AdminService.generate_csv_report` to prevent spreadsheet software from executing arbitrary code.
+13. **How does the CI/CD pipeline ensure code health?** GitHub Actions runs Ruff to enforce PEP 8 formatting and lint rules, followed by the automated test suite on multiple Python versions (3.11, 3.12) on every push and pull request.
+
 
 ## Assumptions and Scope
 
