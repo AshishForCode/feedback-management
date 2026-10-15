@@ -1,18 +1,18 @@
-import re
-import sqlite3
-from urllib.parse import urljoin, urlparse
+"""Auth Blueprint: Presentation layer for authentication, login, student registration, and logout."""
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import UserMixin, current_user, login_user, logout_user
-from werkzeug.security import check_password_hash, generate_password_hash
 
-from .db import get_db
+from .repositories.user_repository import UserRepository
+from .services.auth_service import AuthService
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
+auth_service = AuthService(UserRepository)
 
 
 class User(UserMixin):
     """Small authenticated-user object backed by the users table."""
+
     def __init__(self, row):
         self.id = str(row["user_id"])
         self.email = row["email"]
@@ -25,96 +25,57 @@ class User(UserMixin):
         return self._active
 
 
-def load_user(user_id):
-    row = get_db().execute(
-        "SELECT user_id, email, full_name, role, is_active FROM users WHERE user_id = ?",
-        (user_id,),
-    ).fetchone()
+def load_user(user_id: str | int) -> User | None:
+    """Flask-Login user loader callback backed by UserRepository."""
+    row = UserRepository.get_by_id(user_id)
     return User(row) if row else None
-
-
-def _safe_next_url(target):
-    if not target:
-        return None
-    host_url = urlparse(request.host_url)
-    redirect_url = urlparse(urljoin(request.host_url, target))
-    if redirect_url.scheme in {"http", "https"} and host_url.netloc == redirect_url.netloc:
-        return target
-    return None
-
-
-def _dashboard_endpoint(role):
-    return {"student": "student.dashboard", "faculty": "faculty.dashboard", "admin": "admin.dashboard"}[role]
 
 
 @bp.route("/login", methods=("GET", "POST"))
 def login():
+    """User authentication view with role-based redirection and next URL handling."""
     if current_user.is_authenticated:
-        return redirect(url_for(_dashboard_endpoint(current_user.role)))
+        return redirect(url_for(auth_service.get_dashboard_endpoint(current_user.role)))
+
     if request.method == "POST":
-        email = request.form.get("email", "").strip().lower()
+        email = request.form.get("email", "")
         password = request.form.get("password", "")
         remember = bool(request.form.get("remember"))
-        row = get_db().execute(
-            "SELECT * FROM users WHERE email = ?", (email,)
-        ).fetchone()
-        if row is None or not check_password_hash(row["password_hash"], password):
-            flash("Email or password is incorrect.", "danger")
-        elif not row["is_active"]:
-            flash("This account has been deactivated. Please contact an administrator.", "warning")
-        else:
-            login_user(User(row), remember=remember)
-            flash(f"Welcome back, {row['full_name']}!", "success")
-            return redirect(_safe_next_url(request.args.get("next")) or url_for(_dashboard_endpoint(row["role"])))
+
+        user_row, error = auth_service.authenticate(email, password)
+        if error:
+            category = "warning" if "deactivated" in error else "danger"
+            flash(error, category)
+        elif user_row:
+            login_user(User(user_row), remember=remember)
+            flash(f"Welcome back, {user_row['full_name']}!", "success")
+            safe_next = auth_service.is_safe_redirect_url(request.args.get("next"), request.host_url)
+            target_endpoint = safe_next or url_for(auth_service.get_dashboard_endpoint(user_row["role"]))
+            return redirect(target_endpoint)
+
     return render_template("auth/login.html")
 
 
 @bp.route("/register", methods=("GET", "POST"))
 def register():
+    """Student registration view."""
     if current_user.is_authenticated:
-        return redirect(url_for(_dashboard_endpoint(current_user.role)))
-    if request.method == "POST":
-        full_name = request.form.get("full_name", "").strip()
-        email = request.form.get("email", "").strip().lower()
-        student_number = request.form.get("student_number", "").strip()
-        department = request.form.get("department", "").strip()
-        password = request.form.get("password", "")
-        errors = []
-        if len(full_name) < 2 or len(full_name) > 100:
-            errors.append("Name must be between 2 and 100 characters.")
-        if not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", email) or len(email) > 254:
-            errors.append("Enter a valid email address.")
-        if not re.fullmatch(r"[A-Za-z0-9-]{3,30}", student_number):
-            errors.append("Student number must be 3-30 letters, numbers, or hyphens.")
-        if not department or len(department) > 80:
-            errors.append("Enter a department (up to 80 characters).")
-        if len(password) < 8 or len(password) > 128:
-            errors.append("Password must be between 8 and 128 characters.")
+        return redirect(url_for(auth_service.get_dashboard_endpoint(current_user.role)))
 
-        if not errors:
-            db = get_db()
-            try:
-                cursor = db.execute(
-                    "INSERT INTO users (email, password_hash, full_name, role) VALUES (?, ?, ?, 'student')",
-                    (email, generate_password_hash(password), full_name),
-                )
-                db.execute(
-                    "INSERT INTO students (student_id, student_number, department) VALUES (?, ?, ?)",
-                    (cursor.lastrowid, student_number, department),
-                )
-                db.commit()
-                flash("Registration complete. You can now log in.", "success")
-                return redirect(url_for("auth.login"))
-            except sqlite3.IntegrityError:
-                db.rollback()
-                errors.append("That email or student number is already registered.")
+    if request.method == "POST":
+        success, errors = auth_service.register_student(request.form)
+        if success:
+            flash("Registration complete. You can now log in.", "success")
+            return redirect(url_for("auth.login"))
         for error in errors:
             flash(error, "danger")
+
     return render_template("auth/register.html")
 
 
 @bp.post("/logout")
 def logout():
+    """Sign the active user out and clear session."""
     logout_user()
     flash("You have been logged out.", "info")
     return redirect(url_for("auth.login"))

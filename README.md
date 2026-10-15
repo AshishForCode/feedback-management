@@ -8,53 +8,70 @@
 
 A coursework-sized Flask application for anonymous course feedback. The implementation is staged: database and authentication first, then student/faculty workflows, then administration and aggregate reports. SQLite is used so the application runs locally without a separate database server.
 
-## 1. Project Structure
+## 1. Project Architecture & Structure
+
+The codebase is organized following a **3-Layer Architecture** (Presentation $\rightarrow$ Service $\rightarrow$ Repository) to isolate database queries, business rules, and HTTP handling:
 
 ```text
 feedback-management/
-├── feedback_app/
-│   ├── __init__.py                 # App factory, extensions, blueprints, startup schema
-│   ├── admin.py                    # Admin CRUD, enrollments, assignments, reports, CSV
-│   ├── auth.py                     # User model, login, student registration, logout
-│   ├── db.py                       # SQLite connection lifecycle and init-db command
-│   ├── decorators.py               # Role-based access decorator
-│   ├── faculty.py                  # Faculty-scoped anonymous summaries and comments
-│   ├── schema.sql                  # Normalized schema and demonstration INSERT statements
-│   ├── student.py                  # Enrollment view and feedback submit/edit/delete
-│   ├── static/style.css            # Application styling
-│   └── templates/
-│       ├── base.html               # Shared navigation, flash messages, CSRF field pattern
-│       ├── auth/                   # Login and student registration
-│       ├── student/                # Student dashboard and feedback form
-│       ├── faculty/                # Faculty dashboard
-│       └── admin/                  # Admin dashboard, edit forms, reports
-├── tests/test_app.py               # Flask test-client workflow tests
-├── index.html                      # GitHub Pages live interactive showcase & demo
+├── .github/workflows/ci.yml        # Automated CI: Ruff linting, formatting & test suite
+├── .env.example                    # Blueprint for environment variables
+├── .pre-commit-config.yaml         # Git pre-commit hooks for formatting & linting
+├── pyproject.toml                  # PEP 517/621 packaging & tool config (Ruff, Pytest, Mypy)
+├── requirements.txt                # Production dependencies
+├── requirements-dev.txt            # Development & testing tooling
+├── run.py                          # Local development entry point
+│
+├── feedback_app/                   # Main Application Package
+│   ├── __init__.py                 # App factory, extensions, healthz probe, blueprints
+│   ├── config.py                   # Environment configuration (Dev, Test, Prod)
+│   ├── db.py                       # SQLite connection lifecycle and smart schema init
+│   ├── decorators.py               # Role-based access control (@roles_required)
+│   ├── schema.sql                  # Normalized SQLite DDL & seed data
+│   │
+│   ├── repositories/               # Data Access Layer (Isolated SQL Queries)
+│   │   ├── admin_repository.py     # User CRUD, course management, assignments, reports
+│   │   ├── faculty_repository.py   # Teaching summaries, custom forms DDL, response stats
+│   │   ├── feedback_repository.py  # Student enrollments, feedback submissions, window checks
+│   │   └── user_repository.py      # User lookup, authentication, student registration
+│   │
+│   ├── services/                   # Business Logic Layer (Framework-Agnostic Rules)
+│   │   ├── admin_service.py        # Account rules, CSV export with formula injection escaping
+│   │   ├── auth_service.py         # Credential checks, role endpoints, URL sanitization
+│   │   ├── faculty_service.py      # Question validation, rating distribution & yes/no analytics
+│   │   └── feedback_service.py     # 1-5 rating validation, 24h edit window, form responses
+│   │
+│   ├── static/style.css            # Responsive application styling
+│   └── templates/                  # Jinja Presentation Layer
+│       ├── base.html               # Shared navigation, flash messages, CSRF field
+│       ├── auth/                   # Login and registration views
+│       ├── student/                # Student dashboard, feedback form, custom form fill
+│       ├── faculty/                # Faculty dashboard, form builder, analytics view
+│       └── admin/                  # Admin dashboard, edit modals, aggregate reports
+│
+├── tests/                          # Modular Automated Test Suite
+│   ├── conftest.py                 # Pytest fixtures (app, client, auth, db)
+│   ├── base.py                     # BaseTestCase with isolated SQLite lifecycle
+│   ├── test_app.py                 # Unified test suite runner
+│   ├── test_auth.py                # Authentication, registration, and session tests
+│   ├── test_student.py             # Feedback submission, rating validation, form participation
+│   ├── test_faculty.py             # Anonymous metrics, form builder, question analytics
+│   ├── test_admin.py               # User/course management, reports, and CSV exports
+│   └── test_security.py            # RBAC boundaries, redirects, /healthz probe
+│
 ├── Dockerfile                      # Container deployment configuration
 ├── Procfile                        # WSGI process definition for Render & Railway
 ├── render.yaml                     # Render Blueprint specification
-├── .gitignore
-├── requirements.txt
-├── run.py                          # Local development entry point
 └── README.md
 ```
 
-The `instance/` directory and SQLite database are created automatically on first startup. A local `.venv/` is created during setup and is not part of the source tree.
+### File & Layer Guide
 
-### File Guide
-
-- [run.py](run.py) starts the development server through the app factory.
-- [feedback_app/__init__.py](feedback_app/__init__.py) configures Flask, CSRF, login sessions, database initialization, and route blueprints.
-- [feedback_app/schema.sql](feedback_app/schema.sql) is the complete SQLite DDL and sample-data script.
-- [feedback_app/db.py](feedback_app/db.py) opens one parameterized SQLite connection per request and exposes `flask init-db`.
-- [feedback_app/auth.py](feedback_app/auth.py) hashes passwords, registers students, authenticates users, and logs out.
-- [feedback_app/decorators.py](feedback_app/decorators.py) enforces role-based route access.
-- [feedback_app/student.py](feedback_app/student.py) limits feedback to a student's enrollments, validates ratings, and enforces the edit window.
-- [feedback_app/faculty.py](feedback_app/faculty.py) calculates averages and loads comments without selecting student identities.
-- [feedback_app/admin.py](feedback_app/admin.py) manages accounts, courses, assignments, enrollments, reports, and CSV downloads.
-- [feedback_app/templates/base.html](feedback_app/templates/base.html) is the shared Jinja layout; role templates provide the relevant workflows.
-- [feedback_app/static/style.css](feedback_app/static/style.css) contains the responsive presentation styles.
-- [tests/test_app.py](tests/test_app.py) tests registration, feedback, role boundaries, anonymity, and reports.
+- **Presentation Layer (Blueprints)**: `admin.py`, `auth.py`, `faculty.py`, `student.py` handle HTTP routing, cookie sessions, and template rendering.
+- **Service Layer (`services/`)**: Validates input formats, executes domain rules (e.g. 24-hour edit windows, question sanitization), and calculates analytics.
+- **Repository Layer (`repositories/`)**: Executes parameterized SQL queries with clean transaction rollbacks on integrity errors.
+- **Configuration Layer (`config.py`)**: Environment-specific settings (`DevelopmentConfig`, `TestingConfig`, `ProductionConfig`) with automated `.env` loading.
+- **Health Check Probe (`/healthz`)**: Verifies web server and database connectivity for cloud orchestrators (Render, Docker).
 
 ## 2. Database Schema and SQL
 
@@ -104,19 +121,40 @@ Prerequisites: Python 3.10 or newer and an internet connection for installing th
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
-$env:SECRET_KEY = "replace-this-with-a-long-random-secret"
 python run.py
 ```
 
-Open `http://127.0.0.1:5000`. The first run creates `instance/feedback.sqlite3` and loads the sample records. To initialize explicitly, stop the server and run `python -m flask --app run init-db`.
+Open `http://127.0.0.1:5000`. You can also check server status at `http://127.0.0.1:5000/healthz`.
 
-To run the automated tests:
+### Developer Tooling & Testing
 
+Install development dependencies:
 ```powershell
-python -m unittest discover -s tests -v
+python -m pip install -r requirements-dev.txt
 ```
 
-Use the same virtual environment for the server and tests. For local development, `run.py` enables Flask debug mode; do not deploy it as a production server. Set a strong, private `SECRET_KEY` outside source control for any shared or deployed environment.
+Run tests across all domain modules:
+```powershell
+# Unified test runner:
+python tests/test_app.py
+
+# Or run specific domain test suites:
+python tests/test_auth.py
+python tests/test_student.py
+python tests/test_faculty.py
+python tests/test_admin.py
+python tests/test_security.py
+
+# Standard discovery or pytest:
+python -m unittest discover tests
+pytest
+```
+
+Code formatting and linting with Ruff:
+```powershell
+ruff check . --fix
+ruff format .
+```
 
 **Demonstration accounts** (all use password `DemoPass123!`):
 
