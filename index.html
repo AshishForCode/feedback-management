@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Feedback Management System | Live Interactive Showcase</title>
-  <meta name="description" content="A role-based, anonymous course evaluation system built with Flask, SQLite, and 3NF relational architecture. Features interactive browser simulation, architecture explorer, and deployment guides.">
+  <title>Student Feedback Management System | Academic Evaluation Portal</title>
+  <meta name="description" content="A role-based, anonymous course evaluation platform built with Flask, SQLite, and 3NF relational architecture for students, faculty, and administrators.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -213,37 +213,6 @@
     .btn-secondary:hover {
       background: #f1f5f9;
       border-color: #cbd5e1;
-    }
-
-    /* Tabs Bar */
-    .section-tabs {
-      display: flex;
-      justify-content: center;
-      border-bottom: 1px solid var(--border);
-      margin: 2rem 0 1.75rem;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-    .tab-btn {
-      background: transparent;
-      border: none;
-      border-bottom: 2px solid transparent;
-      color: var(--text-muted);
-      font-family: var(--font-sans);
-      font-weight: 500;
-      font-size: 0.9rem;
-      padding: 0.65rem 1.1rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.45rem;
-      transition: all 0.15s ease;
-    }
-    .tab-btn:hover { color: var(--text); }
-    .tab-btn.active {
-      color: var(--text);
-      font-weight: 600;
-      border-bottom-color: var(--text);
     }
 
     /* Main Simulator Container */
@@ -669,79 +638,6 @@
       gap: 0.75rem;
     }
 
-    /* Architecture Section */
-    .arch-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.25rem;
-      margin-bottom: 2.5rem;
-    }
-    .arch-card {
-      background: #ffffff;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1.35rem;
-    }
-    .arch-card h4 {
-      font-size: 1.05rem;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 0.5rem;
-    }
-    .arch-card p {
-      font-size: 0.86rem;
-      color: var(--text-muted);
-      margin-bottom: 0.85rem;
-      line-height: 1.5;
-    }
-    .code-block {
-      background: #f8fafc;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 0.85rem;
-      font-family: var(--font-mono);
-      font-size: 0.78rem;
-      color: var(--text);
-      overflow-x: auto;
-      white-space: pre;
-    }
-
-    /* Viva Q&A Accordion */
-    .viva-list {
-      display: grid;
-      gap: 0.65rem;
-      margin-bottom: 2.5rem;
-    }
-    .viva-item {
-      background: #ffffff;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      overflow: hidden;
-    }
-    .viva-question {
-      padding: 0.85rem 1.15rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-weight: 500;
-      font-size: 0.92rem;
-      color: var(--text);
-      cursor: pointer;
-      user-select: none;
-    }
-    .viva-question:hover { background: #f8fafc; }
-    .viva-answer {
-      display: none;
-      padding: 0 1.15rem 1.15rem;
-      font-size: 0.88rem;
-      color: var(--text-muted);
-      line-height: 1.6;
-      border-top: 1px solid var(--border);
-      padding-top: 0.85rem;
-    }
-    .viva-item.open .viva-answer { display: block; }
-    .viva-item.open .viva-question { font-weight: 600; }
-
     /* Minimal Toast */
     .toast-box {
       position: fixed;
@@ -925,10 +821,7 @@
         <span>Campus / Feedback</span>
       </a>
       <ul class="nav-links">
-        <li><a href="#demo" class="nav-link">Live Demo</a></li>
-        <li><a href="#architecture" class="nav-link">Architecture & Schema</a></li>
-        <li><a href="#viva" class="nav-link">Viva Q&A</a></li>
-        <li><a href="#deploy" class="nav-link">Deploy Guide</a></li>
+        <li><a href="#demo" class="nav-link">Feedback Portal</a></li>
       </ul>
       <a href="https://github.com/AshishForCode/feedback-management" target="_blank" rel="noopener" class="nav-btn">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
@@ -942,42 +835,28 @@
     <div class="container">
       <div class="badge-pill">
         <span class="status-dot"></span>
-        <span>Interactive Live Preview & Documentation</span>
+        <span>Anonymous Evaluations & Academic Management</span>
       </div>
       <h1 class="hero-title">Student Feedback Management System</h1>
       <p class="hero-subtitle">
-        A coursework-ready, anonymous course feedback platform built with Flask, SQLite, and 3NF normalization.
-        Explore the live interactive simulation below without installing anything, or run the native Python backend.
+        A secure, anonymous course feedback platform. Sign in to evaluate courses, review student feedback, or administer accounts.
       </p>
       <div class="hero-tags">
-        <span class="tag">Python 3.11+</span>
-        <span class="tag">Flask 3.x</span>
-        <span class="tag">SQLite3</span>
-        <span class="tag">Flask-Login</span>
-        <span class="tag">Flask-WTF CSRF</span>
-        <span class="tag">3NF Normalized</span>
-        <span class="tag">Strict Anonymity</span>
+        <span class="tag">Student Portal</span>
+        <span class="tag">Faculty Dashboard</span>
+        <span class="tag">Admin Management</span>
+        <span class="tag">Anonymous Evaluations</span>
       </div>
       <div class="hero-actions">
         <a href="#demo" class="btn-primary">
-          <span>⚡ Launch Live Simulator</span>
-        </a>
-        <a href="#deploy" class="btn-secondary">
-          <span>🚀 Deploy Python Backend</span>
+          <span>Enter Feedback Portal</span>
         </a>
       </div>
     </div>
   </header>
 
-  <!-- Navigation Section Tabs -->
-  <div class="container" id="demo">
-    <div class="section-tabs">
-      <button class="tab-btn active" onclick="switchMainTab('demo')">🖥️ Interactive App Demo</button>
-      <button class="tab-btn" onclick="switchMainTab('architecture')">🏛️ Schema & ER Diagram</button>
-      <button class="tab-btn" onclick="switchMainTab('viva')">💡 Viva / Interview Prep</button>
-      <button class="tab-btn" onclick="switchMainTab('deploy')">☁️ Run & Deploy</button>
-    </div>
-
+  <!-- Feedback Portal Container -->
+  <div class="container" id="demo" style="margin-top: 2rem;">
     <!-- Simulator Box -->
     <div id="tab-demo" class="simulator-box">
       <div class="sim-header">
@@ -1118,14 +997,14 @@
             </div>
           </div>
 
-          <h4 style="margin-bottom: 1rem; color: #fff;">My Enrolled Courses</h4>
+          <h4 style="margin-bottom: 1rem; color: var(--text);">My Enrolled Courses</h4>
           <div class="grid-courses" id="student-courses-grid">
             <!-- Rendered by JS -->
           </div>
 
           <div style="display:flex; justify-content:space-between; align-items:center; margin: 2rem 0 1rem 0; flex-wrap:wrap; gap:0.5rem;">
             <div>
-              <h4 style="margin: 0; color: #fff;">Faculty-Created Feedback Forms</h4>
+              <h4 style="margin: 0; color: var(--text);">Faculty-Created Feedback Forms</h4>
               <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Surveys created by your course instructors for specific evaluation.</p>
             </div>
             <span class="badge-pill" style="margin:0; font-size:0.75rem;">Active Forms</span>
@@ -1135,7 +1014,7 @@
           </div>
 
           <div class="history-section">
-            <h4>My Evaluation History & Edit Window</h4>
+            <h4 style="color: var(--text);">My Evaluation History & Edit Window</h4>
             <div class="table-wrap">
               <table>
                 <thead>
@@ -1163,14 +1042,14 @@
               <h3>Faculty Dashboard: Dr. Alan Turing</h3>
               <p>Department of Computer Science · Feedback queries only calculate aggregate scores; student identities are never selected.</p>
             </div>
-            <div class="badge-pill" style="margin:0; background:rgba(99,102,241,0.15); color:#a5b4fc; border-color:rgba(99,102,241,0.3);">
+            <div class="badge-pill" style="margin:0; background:rgba(99,102,241,0.15); color:#4f46e5; border-color:rgba(99,102,241,0.3);">
               <span>🔒 Zero PII Exposed</span>
             </div>
           </div>
 
           <div style="display:flex; justify-content:space-between; align-items:center; margin: 1.5rem 0 1rem 0; flex-wrap:wrap; gap:0.5rem;">
             <div>
-              <h4 style="margin: 0; color: #fff;">My Custom Feedback Forms</h4>
+              <h4 style="margin: 0; color: var(--text);">My Custom Feedback Forms</h4>
               <p style="margin:0; font-size:0.85rem; color:var(--text-muted);">Create custom questions for students to answer anonymously.</p>
             </div>
             <button class="btn-primary" onclick="openCreateCustomFormModal()" style="padding:0.45rem 0.95rem; font-size:0.85rem;">
@@ -1200,7 +1079,7 @@
             </div>
           </div>
 
-          <h4 style="margin-bottom: 1rem; color: #fff;">Anonymous Student Feedback & Qualitative Comments</h4>
+          <h4 style="margin-bottom: 1rem; color: var(--text);">Anonymous Student Feedback & Qualitative Comments</h4>
           <div id="faculty-comments-list">
             <!-- Rendered by JS -->
           </div>
@@ -1211,7 +1090,7 @@
           <div class="banner-card">
             <div>
               <h3>Administrative Oversight & Quality Assurance</h3>
-              <p>System Administrator view · Aggregate reporting, audit trail, and instant CSV export.</p>
+              <p>System Administrator view · User account management, audit trail, and instant CSV export.</p>
             </div>
             <button class="btn-primary" onclick="exportCsvReport()">
               <span>📥 Export CSV Report</span>
@@ -1221,11 +1100,11 @@
           <div class="stats-row">
             <div class="stat-card">
               <div class="stat-label">Total Student Accounts</div>
-              <div class="stat-val">3 <small>active</small></div>
+              <div class="stat-val" id="admin-stat-students">1 <small>active</small></div>
             </div>
             <div class="stat-card">
               <div class="stat-label">Faculty Members</div>
-              <div class="stat-val">2 <small>instructors</small></div>
+              <div class="stat-val" id="admin-stat-faculty">1 <small>instructors</small></div>
             </div>
             <div class="stat-card">
               <div class="stat-label">Course Offerings</div>
@@ -1237,8 +1116,81 @@
             </div>
           </div>
 
+          <!-- USER MANAGEMENT SECTION -->
+          <div class="admin-bar" style="margin-top:2.25rem;">
+            <div>
+              <h4 style="color: var(--text); margin: 0; font-size:1.1rem; font-weight:700;">👥 User Management & Accounts</h4>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin:0.25rem 0 0 0;">Create and manage institutional faculty, student, and administrator accounts.</p>
+            </div>
+            <button class="btn-primary" onclick="toggleAddUserForm()">
+              <span id="btn-toggle-add-user-text">➕ Add New User</span>
+            </button>
+          </div>
+
+          <!-- Add User Form Panel -->
+          <div id="admin-add-user-panel" style="display:none; margin-bottom:1.5rem; background:#ffffff; border:1px solid var(--border); border-radius:var(--radius); padding:1.25rem;">
+            <div style="font-weight:600; font-size:0.95rem; margin-bottom:0.75rem; color:var(--text);">Create New Institutional Account</div>
+            <form id="admin-add-user-form" onsubmit="handleAdminCreateUser(event)">
+              <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:0.85rem; margin-bottom:1rem;">
+                <div class="form-group" style="margin:0;">
+                  <label class="form-label" style="font-size:0.78rem;">Role</label>
+                  <select class="form-select" id="admin-new-role" required style="width:100%; padding:0.55rem; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:var(--font-sans); background:#fff;">
+                    <option value="faculty">Faculty Member</option>
+                    <option value="student">Student</option>
+                    <option value="admin">Administrator</option>
+                  </select>
+                </div>
+                <div class="form-group" style="margin:0;">
+                  <label class="form-label" style="font-size:0.78rem;">Full Name</label>
+                  <input type="text" class="form-input" id="admin-new-name" placeholder="e.g. Dr. Jane Smith" required style="width:100%; padding:0.55rem; border:1px solid var(--border); border-radius:var(--radius-sm);">
+                </div>
+                <div class="form-group" style="margin:0;">
+                  <label class="form-label" style="font-size:0.78rem;">Email Address</label>
+                  <input type="email" class="form-input" id="admin-new-email" placeholder="e.g. jsmith@feedback.local" required style="width:100%; padding:0.55rem; border:1px solid var(--border); border-radius:var(--radius-sm);">
+                </div>
+                <div class="form-group" style="margin:0;">
+                  <label class="form-label" style="font-size:0.78rem;">Department</label>
+                  <input type="text" class="form-input" id="admin-new-dept" placeholder="e.g. Computer Science" required style="width:100%; padding:0.55rem; border:1px solid var(--border); border-radius:var(--radius-sm);">
+                </div>
+                <div class="form-group" style="margin:0;">
+                  <label class="form-label" style="font-size:0.78rem;">Employee / Student ID</label>
+                  <input type="text" class="form-input" id="admin-new-code" placeholder="e.g. FAC-009 or STU-202" required style="width:100%; padding:0.55rem; border:1px solid var(--border); border-radius:var(--radius-sm);">
+                </div>
+                <div class="form-group" style="margin:0;">
+                  <label class="form-label" style="font-size:0.78rem;">Initial Password</label>
+                  <input type="password" class="form-input" id="admin-new-pass" placeholder="At least 8 characters" minlength="8" required style="width:100%; padding:0.55rem; border:1px solid var(--border); border-radius:var(--radius-sm);">
+                </div>
+              </div>
+              <div style="display:flex; justify-content:flex-end; gap:0.5rem;">
+                <button type="button" class="btn-secondary" onclick="toggleAddUserForm()">Cancel</button>
+                <button type="submit" class="btn-primary"><span>Create Account</span></button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Users Table -->
+          <div class="table-wrap" style="margin-bottom:2.25rem;">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Full Name</th>
+                  <th>Role</th>
+                  <th>Email</th>
+                  <th>ID / Code</th>
+                  <th>Department</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="admin-users-table">
+                <!-- Rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- FEEDBACK RECORDS SECTION -->
           <div class="admin-bar">
-            <h4 style="color: #fff; margin: 0;">Institutional Feedback Records</h4>
+            <h4 style="color: var(--text); margin: 0; font-size:1.1rem; font-weight:700;">Institutional Feedback Records</h4>
           </div>
 
           <div class="table-wrap">
@@ -1263,92 +1215,6 @@
 
       </div>
     </div>
-
-    <!-- ARCHITECTURE TAB -->
-    <div id="tab-architecture" style="display:none;">
-      <div class="arch-grid">
-        <div class="arch-card">
-          <h4>🗄️ Relational 3NF Architecture</h4>
-          <p>
-            Normalized SQLite schema separating credential authentication from profile details, enrollments, course assignments, and anonymous feedback.
-          </p>
-          <div class="code-block">USERS (id, email, password_hash, role)
-  ├── STUDENTS (user_id, student_number, full_name)
-  └── FACULTY (user_id, full_name, department)
-
-COURSES (id, code, title, credits)
-  ├── STUDENT_COURSES (student_id, course_id, semester)
-  └── COURSE_ASSIGNMENTS (faculty_id, course_id, semester)
-
-FEEDBACK (id, student_id, course_id,
-          assignment_id, semester,
-          content_rating, teaching_rating,
-          overall_rating, comments, created_at)
-  └── UNIQUE(student_id, course_id, semester)</div>
-        </div>
-
-        <div class="arch-card">
-          <h4>🔒 Anonymity & Security Model</h4>
-          <p>
-            Engineered with strict separation of duties to ensure student privacy while maintaining database referential integrity.
-          </p>
-          <div class="code-block">1. Faculty Privacy:
-   Queries join through COURSE_ASSIGNMENTS
-   and omit STUDENT_ID from SELECT clauses.
-
-2. Werkzeug Password Hashing:
-   PBKDF2/Scrypt salting ensures credentials
-   are never stored in plaintext.
-
-3. Duplicate Prevention:
-   UNIQUE(student_id, course_id, semester)
-   constraint prevents duplicate entries.
-
-4. CSRF Protection:
-   Flask-WTF signed session tokens on POST.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- VIVA TAB -->
-    <div id="tab-viva" style="display:none;">
-      <h3 style="margin-bottom: 1.5rem; color: #fff;">10 Likely Viva / Interview Questions & Answers</h3>
-      <div class="viva-list" id="viva-accordion">
-        <!-- Rendered by JS -->
-      </div>
-    </div>
-
-    <!-- DEPLOY TAB -->
-    <div id="tab-deploy" style="display:none;">
-      <div class="arch-grid">
-        <div class="arch-card">
-          <h4>💻 1. Run Locally (Windows PowerShell)</h4>
-          <p>Clone the repository and run the Flask development server in a few steps:</p>
-          <div class="code-block">git clone https://github.com/AshishForCode/feedback-management.git
-cd feedback-management
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-$env:SECRET_KEY = "dev-secret-key-123"
-python run.py</div>
-        </div>
-
-        <div class="arch-card">
-          <h4>☁️ 2. Deploy Live to Render (Free Cloud)</h4>
-          <p>The repository includes <code>render.yaml</code> and <code>Procfile</code> for instant deployment:</p>
-          <div class="code-block">1. Push your repo to GitHub (Done!)
-2. Go to https://dashboard.render.com
-3. Click "New +" -> "Web Service"
-4. Connect "AshishForCode/feedback-management"
-5. Set:
-   - Environment: Python 3
-   - Build Command: pip install -r requirements.txt
-   - Start Command: gunicorn run:app
-6. Hit Deploy!</div>
-        </div>
-      </div>
-    </div>
-
   </div>
 
   <!-- Feedback Submission Modal -->
@@ -1680,49 +1546,6 @@ python run.py</div>
       ]
     };
 
-    const VIVA_QA = [
-      {
-        q: "1. Why use SQLite instead of MySQL or PostgreSQL for this application?",
-        a: "SQLite is serverless, zero-configuration, and integrated directly into Python's standard library. For this academic and coursework scope, it provides complete relational ACID compliance, foreign-key enforcement, and transactional integrity without requiring an external database server to run."
-      },
-      {
-        q: "2. How are user passwords securely stored?",
-        a: "Werkzeug's password hashing functions (generate_password_hash and check_password_hash) are used. Plaintext passwords are never stored. Passwords are salted and encrypted with modern hashing algorithms (PBKDF2/Scrypt) making rainbow-table and dictionary attacks computationally infeasible."
-      },
-      {
-        q: "3. How does the system guarantee feedback anonymity for faculty?",
-        a: "The faculty dashboard routes and SQL queries join feedback records through COURSE_ASSIGNMENTS and specifically omit the student_id or any student profile fields from the SELECT query. Faculty only see aggregate metrics and un-attributed comments."
-      },
-      {
-        q: "4. How are duplicate feedback submissions prevented?",
-        a: "At the database level, a UNIQUE(student_id, course_id, semester) composite constraint guarantees that no student can ever submit more than one feedback entry per course per term, even in the event of concurrent browser requests."
-      },
-      {
-        q: "5. What protects the application against SQL Injection?",
-        a: "All database queries use parameterized SQL statements with standard question mark '?' placeholders. User input is treated strictly as data literals and never concatenated into SQL execution strings."
-      },
-      {
-        q: "6. What is CSRF protection and how is it implemented?",
-        a: "Cross-Site Request Forgery (CSRF) tricks an authenticated user into executing unauthorized actions. Flask-WTF generates a cryptographic, session-tied token embedded in every state-changing form. Requests lacking a valid token are rejected with HTTP 400."
-      },
-      {
-        q: "7. How is the database schema structured in 3NF (Third Normal Form)?",
-        a: "1NF: All attributes are atomic. 2NF: No partial dependency on composite keys. 3NF: No transitive dependencies. Credentials live in 'users', student details in 'students', course offerings in 'courses', and feedback refers only to the specific enrollment/assignment foreign keys."
-      },
-      {
-        q: "8. What is the feedback edit window and how does it function?",
-        a: "Students have a 24-hour grace period (configured via FEEDBACK_EDIT_HOURS) after submission to revise or withdraw their evaluation. Once the 24 hours expire, the submission is permanently locked."
-      },
-      {
-        q: "9. How does role-based access control (RBAC) work?",
-        a: "A custom Python decorator @role_required('admin') or ('student'/'faculty') intercepts requests. It verifies the authenticated user's role and immediately aborts with HTTP 403 Forbidden if permissions are insufficient."
-      },
-      {
-        q: "10. How are institutional averages calculated for admin reports?",
-        a: "SQL aggregate functions (AVG, COUNT) group feedback by course, faculty, or semester to compute exact mathematical ratings for course content, teaching quality, and overall satisfaction."
-      }
-    ];
-
     // Local state management
     let state = loadState();
     let currentRole = state.currentUser ? state.currentUser.role : null;
@@ -1762,16 +1585,6 @@ python run.py</div>
         renderAll();
         showToast('Demo data reset to original seed state!');
       }
-    }
-
-    function switchMainTab(tabId) {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      event.currentTarget.classList.add('active');
-
-      ['demo', 'architecture', 'viva', 'deploy'].forEach(t => {
-        const el = document.getElementById('tab-' + t);
-        if (el) el.style.display = (t === tabId) ? 'block' : 'none';
-      });
     }
 
     /* Authentication & Role-Based Access Control Simulation */
@@ -2191,24 +2004,120 @@ python run.py</div>
 
     /* Admin View Logic */
     function renderAdminView() {
-      document.getElementById('admin-total-feedbacks').innerHTML = `${state.feedbacks.length} <small>submitted</small>`;
+      const studentCount = state.users.filter(u => u.role === 'student').length;
+      const facultyCount = state.users.filter(u => u.role === 'faculty').length;
+      const elStudents = document.getElementById('admin-stat-students');
+      if (elStudents) elStudents.innerHTML = `${studentCount} <small>active</small>`;
+      const elFaculty = document.getElementById('admin-stat-faculty');
+      if (elFaculty) elFaculty.innerHTML = `${facultyCount} <small>instructors</small>`;
 
+      const elTotal = document.getElementById('admin-total-feedbacks');
+      if (elTotal) elTotal.innerHTML = `${state.feedbacks.length} <small>submitted</small>`;
+
+      // Render User Management Table
+      const userTable = document.getElementById('admin-users-table');
+      if (userTable) {
+        userTable.innerHTML = '';
+        state.users.forEach(u => {
+          const tr = document.createElement('tr');
+          const isCurrent = state.currentUser && state.currentUser.id === u.id;
+          const roleClass = u.role === 'admin' ? 'role-badge-admin' : (u.role === 'faculty' ? 'role-badge-faculty' : 'role-badge-student');
+          const code = u.employeeNumber || u.studentNumber || '—';
+
+          tr.innerHTML = `
+            <td>#${u.id}</td>
+            <td><strong>${u.fullName}</strong></td>
+            <td><span class="role-badge-pill ${roleClass}">${u.role.toUpperCase()}</span></td>
+            <td><code>${u.email}</code></td>
+            <td>${code}</td>
+            <td>${u.department || '—'}</td>
+            <td>
+              ${isCurrent 
+                ? '<span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">(Current)</span>'
+                : `<button class="btn-secondary" style="padding:0.25rem 0.6rem; font-size:0.75rem; color:#dc2626;" onclick="deleteAdminUser(${u.id})">Delete</button>`
+              }
+            </td>
+          `;
+          userTable.appendChild(tr);
+        });
+      }
+
+      // Render Institutional Feedback Table
       const tbody = document.getElementById('admin-feedback-table');
-      tbody.innerHTML = '';
+      if (tbody) {
+        tbody.innerHTML = '';
+        state.feedbacks.forEach(f => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>#${f.id}</td>
+            <td><strong>${f.courseCode}</strong></td>
+            <td>${f.facultyName}</td>
+            <td><span class="sim-user-tag">${f.studentName} (${f.studentId})</span></td>
+            <td>${f.contentRating} / ${f.teachingRating} / ${f.overallRating}</td>
+            <td style="max-width:240px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${f.comments || '—'}</td>
+            <td>${new Date(f.createdAt).toLocaleDateString()}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+    }
 
-      state.feedbacks.forEach(f => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>#${f.id}</td>
-          <td><strong>${f.courseCode}</strong></td>
-          <td>${f.facultyName}</td>
-          <td><span class="sim-user-tag">${f.studentName} (${f.studentId})</span></td>
-          <td>${f.contentRating} / ${f.teachingRating} / ${f.overallRating}</td>
-          <td style="max-width:240px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${f.comments || '—'}</td>
-          <td>${new Date(f.createdAt).toLocaleDateString()}</td>
-        `;
-        tbody.appendChild(tr);
-      });
+    function toggleAddUserForm() {
+      const p = document.getElementById('admin-add-user-panel');
+      const btn = document.getElementById('btn-toggle-add-user-text');
+      if (!p) return;
+      if (p.style.display === 'none' || p.style.display === '') {
+        p.style.display = 'block';
+        if (btn) btn.textContent = '✕ Close Form';
+      } else {
+        p.style.display = 'none';
+        if (btn) btn.textContent = '➕ Add New User';
+      }
+    }
+
+    function handleAdminCreateUser(e) {
+      e.preventDefault();
+      const role = document.getElementById('admin-new-role').value;
+      const fullName = document.getElementById('admin-new-name').value.trim();
+      const email = document.getElementById('admin-new-email').value.trim().toLowerCase();
+      const dept = document.getElementById('admin-new-dept').value.trim();
+      const code = document.getElementById('admin-new-code').value.trim();
+      const password = document.getElementById('admin-new-pass').value;
+
+      if (state.users.some(u => u.email.toLowerCase() === email)) {
+        showToast('A user with that email already exists.');
+        return;
+      }
+
+      const newId = (state.users.length > 0 ? Math.max(...state.users.map(u => u.id)) : 0) + 1;
+      const newUser = {
+        id: newId,
+        email: email,
+        password: password,
+        fullName: fullName,
+        role: role,
+        department: dept
+      };
+      if (role === 'faculty') newUser.employeeNumber = code;
+      else if (role === 'student') newUser.studentNumber = code;
+
+      state.users.push(newUser);
+      saveState();
+      renderAdminView();
+      toggleAddUserForm();
+      document.getElementById('admin-add-user-form').reset();
+      showToast(`User ${fullName} (${role.toUpperCase()}) created successfully!`);
+    }
+
+    function deleteAdminUser(userId) {
+      const u = state.users.find(x => x.id === userId);
+      if (!u) return;
+      if (confirm(`Delete account "${u.fullName}" (${u.email})?`)) {
+        state.users = state.users.filter(x => x.id !== userId);
+        saveState();
+        renderAdminView();
+        showToast(`User ${u.fullName} deleted.`);
+      }
     }
 
     /* Modal Form Operations */
@@ -2598,30 +2507,12 @@ python run.py</div>
       setTimeout(() => { toast.style.display = 'none'; }, 3200);
     }
 
-    // Initialize Viva Accordion
-    function initViva() {
-      const container = document.getElementById('viva-accordion');
-      VIVA_QA.forEach((qa, idx) => {
-        const item = document.createElement('div');
-        item.className = 'viva-item';
-        item.innerHTML = `
-          <div class="viva-question" onclick="this.parentElement.classList.toggle('open')">
-            <span>${qa.q}</span>
-            <span style="font-size:1.1rem;">▾</span>
-          </div>
-          <div class="viva-answer">${qa.a}</div>
-        `;
-        container.appendChild(item);
-      });
-    }
-
     // Init Page - Always start on login / register page; do not land directly on dashboard
     window.addEventListener('DOMContentLoaded', () => {
       state.currentUser = null;
       updateAuthHeaderUI();
       openAuthModal();
       renderAll();
-      initViva();
     });
   </script>
 </body>
