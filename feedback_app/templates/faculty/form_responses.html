@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block title %}Responses — {{ form.title }}{% endblock %}
+{% block content %}
+<div class="page-heading d-flex justify-content-between align-items-center flex-wrap gap-3">
+  <div>
+    <div class="eyebrow">Faculty portal · Form Responses</div>
+    <h1>{{ form.title }}</h1>
+    <p class="text-secondary mb-0">
+      {{ form.course_code }} — {{ form.course_name }} ({{ form.semester }}) ·
+      {% if form.is_active %}
+        <span class="badge text-bg-success">Active / Open</span>
+      {% else %}
+        <span class="badge text-bg-secondary">Closed</span>
+      {% endif %}
+    </p>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('faculty.dashboard') }}" class="btn btn-outline-secondary">
+      ← Back to Dashboard
+    </a>
+    <form method="post" action="{{ url_for('faculty.toggle_form', form_id=form.form_id) }}" class="d-inline m-0">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button type="submit" class="btn btn-outline-primary">
+        {{ 'Close Form' if form.is_active else 'Reopen Form' }}
+      </button>
+    </form>
+  </div>
+</div>
+
+{% if form.instructions %}
+  <div class="alert alert-light border mb-4">
+    <strong class="d-block text-secondary small mb-1">Form Instructions Provided to Students:</strong>
+    <p class="mb-0 text-dark">{{ form.instructions }}</p>
+  </div>
+{% endif %}
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="stat-card p-3 border rounded bg-white">
+      <div class="text-secondary small fw-semibold text-uppercase">Total Student Responses</div>
+      <div class="fs-2 fw-bold text-dark mt-1">{{ response_count }}</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card p-3 border rounded bg-white">
+      <div class="text-secondary small fw-semibold text-uppercase">Total Questions</div>
+      <div class="fs-2 fw-bold text-dark mt-1">{{ results|length }}</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card p-3 border rounded bg-white">
+      <div class="text-secondary small fw-semibold text-uppercase">Privacy & Anonymity</div>
+      <div class="fs-5 fw-bold text-dark mt-1">Zero PII Exposed</div>
+      <div class="text-muted small">Student IDs and names are never selected.</div>
+    </div>
+  </div>
+</div>
+
+<div class="d-flex flex-column gap-4">
+  {% for item in results %}
+    <div class="panel">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <span class="badge text-bg-light border text-secondary mb-1">Question {{ loop.index }} · {{ 'Rating' if item.type == 'rating' else 'Written Feedback' }}</span>
+          <h3 class="fs-5 mb-0 text-dark">{{ item.question.question_text }}</h3>
+        </div>
+        {% if item.type == 'rating' %}
+          <div class="text-end">
+            <span class="fs-3 fw-bold text-dark">{{ item.average }}</span>
+            <span class="text-muted small">/ 5.0</span>
+            <div class="text-muted small">{{ item.total }} rating{{ 's' if item.total != 1 else '' }}</div>
+          </div>
+        {% else %}
+          <span class="badge text-bg-secondary">{{ item.total }} response{{ 's' if item.total != 1 else '' }}</span>
+        {% endif %}
+      </div>
+
+      {% if item.type == 'rating' %}
+        <div class="p-3 bg-light rounded border">
+          <div class="d-flex flex-column gap-2">
+            {% for star in [5, 4, 3, 2, 1] %}
+              {% set count = item.distribution[star] %}
+              {% set percent = (count / item.total * 100)|round if item.total > 0 else 0 %}
+              <div class="d-flex align-items-center gap-3">
+                <span style="width: 55px;" class="small fw-semibold text-secondary">{{ star }} Stars</span>
+                <div class="progress flex-grow-1" style="height: 10px;">
+                  <div class="progress-bar bg-dark" role="progressbar" style="width: {{ percent }}%;" aria-valuenow="{{ percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <span style="width: 70px;" class="small text-muted text-end">{{ count }} ({{ percent }}%)</span>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% else %}
+        {% if item.comments %}
+          <div class="d-flex flex-column gap-2">
+            {% for comment in item.comments %}
+              <div class="p-3 border rounded bg-light">
+                <p class="mb-1 text-dark">{{ comment.text_value }}</p>
+                <div class="text-muted small">Submitted on {{ comment.created_at }} · Anonymous</div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-muted mb-0">No written responses submitted for this question yet.</p>
+        {% endif %}
+      {% endif %}
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

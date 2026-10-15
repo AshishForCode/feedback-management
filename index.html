@@ -1141,6 +1141,17 @@
             <!-- Rendered by JS -->
           </div>
 
+          <div style="display:flex; justify-content:space-between; align-items:center; margin: 2rem 0 1rem 0; flex-wrap:wrap; gap:0.5rem;">
+            <div>
+              <h4 style="margin: 0; color: #fff;">Faculty-Created Feedback Forms</h4>
+              <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Surveys created by your course instructors for specific evaluation.</p>
+            </div>
+            <span class="badge-pill" style="margin:0; font-size:0.75rem;">Active Forms</span>
+          </div>
+          <div class="grid-courses" id="student-custom-forms-grid" style="margin-bottom: 2rem;">
+            <!-- Rendered by JS -->
+          </div>
+
           <div class="history-section">
             <h4>My Evaluation History & Edit Window</h4>
             <div class="table-wrap">
@@ -1173,6 +1184,19 @@
             <div class="badge-pill" style="margin:0; background:rgba(99,102,241,0.15); color:#a5b4fc; border-color:rgba(99,102,241,0.3);">
               <span>🔒 Zero PII Exposed</span>
             </div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; margin: 1.5rem 0 1rem 0; flex-wrap:wrap; gap:0.5rem;">
+            <div>
+              <h4 style="margin: 0; color: #fff;">My Custom Feedback Forms</h4>
+              <p style="margin:0; font-size:0.85rem; color:var(--text-muted);">Create custom questions for students to answer anonymously.</p>
+            </div>
+            <button class="btn-primary" onclick="openCreateCustomFormModal()" style="padding:0.45rem 0.95rem; font-size:0.85rem;">
+              <span>+ Create Feedback Form</span>
+            </button>
+          </div>
+          <div id="faculty-custom-forms-container" style="margin-bottom: 2rem;">
+            <!-- Rendered by JS -->
           </div>
 
           <div class="stats-row">
@@ -1411,6 +1435,119 @@ python run.py</div>
     </div>
   </div>
 
+  <!-- Faculty Create Custom Form Modal -->
+  <div class="modal-overlay" id="modal-create-custom-form">
+    <div class="modal-card" style="max-width: 620px;">
+      <div class="modal-header">
+        <div>
+          <h3>Create Custom Feedback Form</h3>
+          <span style="font-size:0.85rem; color:var(--text-muted);">Construct an anonymous feedback survey for your students</span>
+        </div>
+        <button class="btn-close" onclick="closeCreateCustomFormModal()">&times;</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Target Course</label>
+        <select class="form-textarea" style="min-height:auto; padding:0.5rem;" id="custom-form-course-select">
+          <option value="1">CS101 · Introduction to Computer Science (2026-Fall)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Form Title</label>
+        <input type="text" class="form-textarea" style="min-height:auto; padding:0.6rem;" id="custom-form-title" placeholder="e.g. Mid-Semester Lecture & Lab Evaluation">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Instructions for Students (Optional)</label>
+        <textarea class="form-textarea" id="custom-form-instructions" rows="2" placeholder="e.g. Please share honest feedback about lecture pacing and lab assignments."></textarea>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+        <label class="form-label" style="margin:0;">Form Questions</label>
+        <button type="button" class="btn-secondary" onclick="addCustomFormQuestionRow()" style="padding:0.25rem 0.6rem; font-size:0.75rem;">
+          + Add Question
+        </button>
+      </div>
+
+      <div id="custom-form-questions-list" style="display:flex; flex-direction:column; gap:0.6rem; max-height:220px; overflow-y:auto; margin-bottom:1rem; padding-right:4px;">
+        <!-- Dynamic Questions added here -->
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.25rem;">
+        <button class="btn-secondary" onclick="closeCreateCustomFormModal()">Cancel</button>
+        <button class="btn-primary" onclick="submitCreateCustomForm()">
+          <span>Publish Feedback Form</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Student Fill Custom Form Modal -->
+  <div class="modal-overlay" id="modal-fill-custom-form">
+    <div class="modal-card" style="max-width: 620px;">
+      <div class="modal-header">
+        <div>
+          <h3 id="fill-custom-title">Fill Feedback Form</h3>
+          <span id="fill-custom-subtitle" style="font-size:0.85rem; color:var(--text-muted);">CS101 · Dr. Alan Turing</span>
+        </div>
+        <button class="btn-close" onclick="closeFillCustomFormModal()">&times;</button>
+      </div>
+
+      <div class="anonymity-note">
+        <span>🔒</span>
+        <span>Strictly Anonymous: Your name and student number will never be visible to the instructor.</span>
+      </div>
+
+      <div id="fill-custom-instructions" style="font-size:0.85rem; color:var(--text-muted); margin-bottom:1rem; background:#f8fafc; padding:0.6rem; border-radius:6px; border:1px solid var(--border);"></div>
+
+      <input type="hidden" id="fill-custom-form-id">
+
+      <div id="fill-custom-questions-container" style="display:flex; flex-direction:column; gap:1.2rem; max-height:360px; overflow-y:auto; padding-right:4px;">
+        <!-- Generated Questions -->
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
+        <button class="btn-secondary" onclick="closeFillCustomFormModal()">Cancel</button>
+        <button class="btn-primary" onclick="submitFillCustomForm()">
+          <span>Submit Anonymous Feedback</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Faculty View Custom Responses Modal -->
+  <div class="modal-overlay" id="modal-view-custom-responses">
+    <div class="modal-card" style="max-width: 680px;">
+      <div class="modal-header">
+        <div>
+          <h3 id="view-custom-title">Form Responses</h3>
+          <span id="view-custom-subtitle" style="font-size:0.85rem; color:var(--text-muted);">CS101 · Anonymous Student Evaluation</span>
+        </div>
+        <button class="btn-close" onclick="closeViewCustomResponsesModal()">&times;</button>
+      </div>
+
+      <div style="display:flex; gap:1rem; margin-bottom:1.25rem;">
+        <div style="background:#f8fafc; border:1px solid var(--border); border-radius:6px; padding:0.6rem 1rem; flex:1;">
+          <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Submissions</div>
+          <div id="view-custom-total-count" style="font-size:1.5rem; font-weight:700; color:var(--text);">0</div>
+        </div>
+        <div style="background:#f8fafc; border:1px solid var(--border); border-radius:6px; padding:0.6rem 1rem; flex:1;">
+          <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600; text-transform:uppercase;">Anonymity</div>
+          <div style="font-size:1rem; font-weight:600; color:#10b981; margin-top:0.25rem;">🔒 Zero PII Exposed</div>
+        </div>
+      </div>
+
+      <div id="view-custom-results-container" style="display:flex; flex-direction:column; gap:1.2rem; max-height:360px; overflow-y:auto; padding-right:4px;">
+        <!-- Analytics and qualitative responses rendered here -->
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem;">
+        <button class="btn-secondary" onclick="closeViewCustomResponsesModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
   <!-- RBAC Unauthorized Modal -->
   <div class="modal-overlay" id="rbac-modal">
     <div class="modal-card" style="max-width: 480px; text-align: center;">
@@ -1530,6 +1667,34 @@ python run.py</div>
           createdAt: new Date(Date.now() - 3600 * 1000 * 48).toISOString(),
           editableUntil: new Date(Date.now() - 3600 * 1000 * 24).toISOString() // Expired
         }
+      ],
+      customForms: [
+        {
+          id: 1,
+          courseId: 1,
+          courseCode: 'CS101',
+          facultyName: 'Dr. Alan Turing',
+          semester: '2026-Fall',
+          title: 'Mid-Semester Course Feedback',
+          instructions: 'Please provide honest anonymous feedback to help improve lecture delivery and lab sessions.',
+          isActive: true,
+          questions: [
+            { id: 1, text: 'How clearly does the instructor explain core programming concepts?', type: 'rating' },
+            { id: 2, text: 'How effective are the practical coding demonstrations and lab sessions?', type: 'rating' },
+            { id: 3, text: 'What topics or areas would you like more hands-on practice or review on?', type: 'text' }
+          ],
+          responses: [
+            {
+              studentId: 'STU2024002',
+              answers: {
+                1: 5,
+                2: 4,
+                3: 'The visual memory diagrams were very clear. Would appreciate more binary tree examples.'
+              },
+              submittedAt: new Date(Date.now() - 3600 * 1000 * 10).toISOString()
+            }
+          ]
+        }
       ]
     };
 
@@ -1581,6 +1746,7 @@ python run.py</div>
     let currentRole = state.currentUser ? state.currentUser.role : null;
     let currentRatings = { content: 5, teaching: 5, overall: 5 };
     let pendingRbacRole = null;
+    let activeCustomFormRatings = {};
 
     function loadState() {
       const saved = localStorage.getItem('feedback_sim_state');
@@ -1591,6 +1757,7 @@ python run.py</div>
           if (!parsed.currentUser || !parsed.users.some(u => u.id === parsed.currentUser.id)) {
             parsed.currentUser = null;
           }
+          if (!parsed.customForms) parsed.customForms = JSON.parse(JSON.stringify(INITIAL_STATE.customForms));
           return parsed;
         } catch(e) {}
       }
@@ -1882,6 +2049,40 @@ python run.py</div>
         container.appendChild(card);
       });
 
+      // Render faculty custom forms available for student
+      const customFormsGrid = document.getElementById('student-custom-forms-grid');
+      if (customFormsGrid) {
+        customFormsGrid.innerHTML = '';
+        const activeForms = (state.customForms || []).filter(f => f.isActive);
+        if (activeForms.length === 0) {
+          customFormsGrid.innerHTML = '<div style="color:var(--text-dim); padding:1rem; grid-column:1/-1;">No custom feedback forms active from instructors currently.</div>';
+        } else {
+          activeForms.forEach(form => {
+            const hasSubmitted = (form.responses || []).some(r => r.studentId === currentStudentId);
+            const card = document.createElement('div');
+            card.className = 'course-card';
+            card.innerHTML = `
+              <div>
+                <span class="course-code">${form.courseCode} · ${form.semester}</span>
+                <div class="course-title">${form.title}</div>
+                <div class="course-faculty">Instructor: ${form.facultyName}</div>
+                <div style="font-size:0.8rem; color:var(--text-muted); margin-top:0.4rem;">${form.instructions || ''}</div>
+              </div>
+              <div class="course-footer">
+                <span class="status-badge ${hasSubmitted ? 'submitted' : 'pending'}">
+                  ${hasSubmitted ? '✓ Response Recorded' : `${form.questions.length} Questions`}
+                </span>
+                ${hasSubmitted ?
+                  '<button class="btn-secondary" style="padding:0.4rem 0.75rem; font-size:0.8rem;" disabled>Submitted</button>' :
+                  `<button class="btn-primary" style="padding:0.4rem 0.9rem; font-size:0.8rem;" onclick="openFillCustomFormModal(${form.id})"><span>Fill Feedback Form</span></button>`
+                }
+              </div>
+            `;
+            customFormsGrid.appendChild(card);
+          });
+        }
+      }
+
       // Render student history
       const historyBody = document.getElementById('student-history-body');
       const studentFeedbacks = state.feedbacks.filter(f => f.studentId === currentStudentId);
@@ -1915,6 +2116,62 @@ python run.py</div>
 
     /* Faculty View Logic */
     function renderFacultyView() {
+      // Render custom feedback forms created by faculty
+      const formsContainer = document.getElementById('faculty-custom-forms-container');
+      if (formsContainer) {
+        formsContainer.innerHTML = '';
+        const facultyForms = state.customForms || [];
+        if (facultyForms.length === 0) {
+          formsContainer.innerHTML = '<div style="color:var(--text-dim); text-align:center; padding:1.5rem; background:#ffffff; border:1px solid var(--border); border-radius:8px;">No custom feedback forms created yet. Click "+ Create Feedback Form" above to build one for your students!</div>';
+        } else {
+          const tableWrap = document.createElement('div');
+          tableWrap.className = 'table-wrap';
+          let rows = '';
+          facultyForms.forEach(f => {
+            const respCount = (f.responses || []).length;
+            rows += `
+              <tr>
+                <td>
+                  <strong>${f.title}</strong>
+                  <div style="font-size:0.75rem; color:var(--text-muted);">${f.instructions || ''}</div>
+                </td>
+                <td>${f.courseCode} · ${f.semester}</td>
+                <td>${f.questions.length}</td>
+                <td><span class="role-badge-pill" style="background:#e2e8f0; color:#334155;">${respCount} response${respCount !== 1 ? 's' : ''}</span></td>
+                <td>
+                  <span class="status-badge ${f.isActive ? 'submitted' : 'pending'}">
+                    ${f.isActive ? 'Open' : 'Closed'}
+                  </span>
+                </td>
+                <td>
+                  <div style="display:flex; gap:0.4rem;">
+                    <button class="btn-primary" style="padding:0.3rem 0.6rem; font-size:0.75rem;" onclick="openViewCustomResponsesModal(${f.id})"><span>View Responses</span></button>
+                    <button class="btn-secondary" style="padding:0.3rem 0.6rem; font-size:0.75rem;" onclick="toggleCustomFormStatus(${f.id})">${f.isActive ? 'Close' : 'Reopen'}</button>
+                    <button class="btn-reset" style="padding:0.3rem 0.6rem; font-size:0.75rem;" onclick="deleteCustomForm(${f.id})">Delete</button>
+                  </div>
+                </td>
+              </tr>
+            `;
+          });
+          tableWrap.innerHTML = `
+            <table>
+              <thead>
+                <tr>
+                  <th>Form Title</th>
+                  <th>Course</th>
+                  <th>Questions</th>
+                  <th>Responses</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          `;
+          formsContainer.appendChild(tableWrap);
+        }
+      }
+
       // Alan Turing teaches CS101 (id: 1)
       const turingFeedbacks = state.feedbacks.filter(f => f.courseId === 1);
       const count = turingFeedbacks.length;
@@ -2072,6 +2329,266 @@ python run.py</div>
         saveState();
         renderAll();
         showToast('Feedback record deleted.');
+      }
+    }
+
+    /* Custom Feedback Form Handlers */
+    function openCreateCustomFormModal() {
+      document.getElementById('custom-form-title').value = '';
+      document.getElementById('custom-form-instructions').value = '';
+      const list = document.getElementById('custom-form-questions-list');
+      list.innerHTML = `
+        <div class="custom-q-row" style="display:flex; gap:0.5rem; align-items:center;">
+          <input type="text" class="form-textarea" style="min-height:auto; padding:0.4rem 0.6rem; flex:2;" placeholder="Question 1 (e.g. Clarity of lecture concepts)" value="How clearly were core concepts and course materials explained?">
+          <select class="form-textarea" style="min-height:auto; padding:0.4rem; flex:1;">
+            <option value="rating" selected>Rating (1-5)</option>
+            <option value="text">Written Comment</option>
+          </select>
+          <button type="button" class="btn-reset" onclick="removeCustomFormQuestionRow(this)" style="padding:0.4rem 0.6rem;">✕</button>
+        </div>
+        <div class="custom-q-row" style="display:flex; gap:0.5rem; align-items:center;">
+          <input type="text" class="form-textarea" style="min-height:auto; padding:0.4rem 0.6rem; flex:2;" placeholder="Question 2 (e.g. Suggestions for improvement)" value="What topics or areas would you like more hands-on practice or review on?">
+          <select class="form-textarea" style="min-height:auto; padding:0.4rem; flex:1;">
+            <option value="rating">Rating (1-5)</option>
+            <option value="text" selected>Written Comment</option>
+          </select>
+          <button type="button" class="btn-reset" onclick="removeCustomFormQuestionRow(this)" style="padding:0.4rem 0.6rem;">✕</button>
+        </div>
+      `;
+      document.getElementById('modal-create-custom-form').classList.add('active');
+    }
+
+    function closeCreateCustomFormModal() {
+      document.getElementById('modal-create-custom-form').classList.remove('active');
+    }
+
+    function addCustomFormQuestionRow() {
+      const list = document.getElementById('custom-form-questions-list');
+      const count = list.querySelectorAll('.custom-q-row').length + 1;
+      const div = document.createElement('div');
+      div.className = 'custom-q-row';
+      div.style.cssText = 'display:flex; gap:0.5rem; align-items:center;';
+      div.innerHTML = `
+        <input type="text" class="form-textarea" style="min-height:auto; padding:0.4rem 0.6rem; flex:2;" placeholder="Question ${count} prompt...">
+        <select class="form-textarea" style="min-height:auto; padding:0.4rem; flex:1;">
+          <option value="rating">Rating (1-5)</option>
+          <option value="text">Written Comment</option>
+        </select>
+        <button type="button" class="btn-reset" onclick="removeCustomFormQuestionRow(this)" style="padding:0.4rem 0.6rem;">✕</button>
+      `;
+      list.appendChild(div);
+    }
+
+    function removeCustomFormQuestionRow(btn) {
+      const list = document.getElementById('custom-form-questions-list');
+      if (list.querySelectorAll('.custom-q-row').length > 1) {
+        btn.closest('.custom-q-row').remove();
+      } else {
+        alert('Form must contain at least one question.');
+      }
+    }
+
+    function submitCreateCustomForm() {
+      const title = document.getElementById('custom-form-title').value.trim();
+      const instructions = document.getElementById('custom-form-instructions').value.trim();
+      const courseId = parseInt(document.getElementById('custom-form-course-select').value);
+      const course = state.courses.find(c => c.id === courseId) || state.courses[0];
+
+      if (!title) {
+        alert('Please enter a title for your feedback form.');
+        return;
+      }
+
+      const qRows = document.querySelectorAll('#custom-form-questions-list .custom-q-row');
+      const questions = [];
+      qRows.forEach((row, idx) => {
+        const text = row.querySelector('input').value.trim();
+        const type = row.querySelector('select').value;
+        if (text) {
+          questions.push({ id: idx + 1, text: text, type: type });
+        }
+      });
+
+      if (questions.length === 0) {
+        alert('Please specify at least one valid question.');
+        return;
+      }
+
+      const newId = (state.customForms.length > 0 ? Math.max(...state.customForms.map(f => f.id)) : 0) + 1;
+      state.customForms.push({
+        id: newId,
+        courseId: course.id,
+        courseCode: course.code,
+        facultyName: (state.currentUser && state.currentUser.role === 'faculty') ? state.currentUser.fullName : course.faculty,
+        semester: '2026-Fall',
+        title: title,
+        instructions: instructions,
+        isActive: true,
+        questions: questions,
+        responses: []
+      });
+
+      saveState();
+      closeCreateCustomFormModal();
+      renderAll();
+      showToast(`Feedback form "${title}" published! Students can now submit evaluations.`);
+    }
+
+    function openFillCustomFormModal(formId) {
+      const form = state.customForms.find(f => f.id === formId);
+      if (!form) return;
+      document.getElementById('fill-custom-form-id').value = form.id;
+      document.getElementById('fill-custom-title').textContent = form.title;
+      document.getElementById('fill-custom-subtitle').textContent = `${form.courseCode} · ${form.facultyName} (${form.semester})`;
+      document.getElementById('fill-custom-instructions').textContent = form.instructions || 'Please answer the questions below. Your responses are anonymous.';
+      
+      activeCustomFormRatings = {};
+      const container = document.getElementById('fill-custom-questions-container');
+      container.innerHTML = '';
+
+      form.questions.forEach((q, idx) => {
+        const div = document.createElement('div');
+        div.style.cssText = 'background:#f8fafc; border:1px solid var(--border); border-radius:6px; padding:0.75rem;';
+        if (q.type === 'rating') {
+          activeCustomFormRatings[q.id] = 5;
+          div.innerHTML = `
+            <div style="font-weight:600; font-size:0.88rem; margin-bottom:0.4rem;">${idx + 1}. ${q.text}</div>
+            <div class="rating-row" id="fill-rate-${q.id}">
+              <div class="rating-opt" onclick="setCustomRating(${q.id}, 1)">1</div>
+              <div class="rating-opt" onclick="setCustomRating(${q.id}, 2)">2</div>
+              <div class="rating-opt" onclick="setCustomRating(${q.id}, 3)">3</div>
+              <div class="rating-opt" onclick="setCustomRating(${q.id}, 4)">4</div>
+              <div class="rating-opt selected" onclick="setCustomRating(${q.id}, 5)">5</div>
+            </div>
+          `;
+        } else {
+          div.innerHTML = `
+            <div style="font-weight:600; font-size:0.88rem; margin-bottom:0.4rem;">${idx + 1}. ${q.text}</div>
+            <textarea class="form-textarea" id="fill-text-${q.id}" rows="2" placeholder="Write your anonymous feedback or suggestions..."></textarea>
+          `;
+        }
+        container.appendChild(div);
+      });
+
+      document.getElementById('modal-fill-custom-form').classList.add('active');
+    }
+
+    function closeFillCustomFormModal() {
+      document.getElementById('modal-fill-custom-form').classList.remove('active');
+    }
+
+    function setCustomRating(qId, val) {
+      activeCustomFormRatings[qId] = val;
+      const row = document.getElementById('fill-rate-' + qId);
+      if (row) {
+        row.querySelectorAll('.rating-opt').forEach((opt, idx) => {
+          if (idx + 1 === val) opt.classList.add('selected');
+          else opt.classList.remove('selected');
+        });
+      }
+    }
+
+    function submitFillCustomForm() {
+      const formId = parseInt(document.getElementById('fill-custom-form-id').value);
+      const form = state.customForms.find(f => f.id === formId);
+      if (!form) return;
+
+      const currentStudentId = (state.currentUser && state.currentUser.role === 'student' && state.currentUser.studentNumber) ? state.currentUser.studentNumber : 'STU2024001';
+
+      if (form.responses && form.responses.some(r => r.studentId === currentStudentId)) {
+        alert('You have already submitted a response for this feedback form.');
+        return;
+      }
+
+      const answers = {};
+      form.questions.forEach(q => {
+        if (q.type === 'rating') {
+          answers[q.id] = activeCustomFormRatings[q.id] || 5;
+        } else {
+          const el = document.getElementById('fill-text-' + q.id);
+          answers[q.id] = el ? el.value.trim() : '';
+        }
+      });
+
+      if (!form.responses) form.responses = [];
+      form.responses.push({
+        studentId: currentStudentId,
+        answers: answers,
+        submittedAt: new Date().toISOString()
+      });
+
+      saveState();
+      closeFillCustomFormModal();
+      renderAll();
+      showToast('Thank you! Your feedback form was submitted anonymously.');
+    }
+
+    function openViewCustomResponsesModal(formId) {
+      const form = state.customForms.find(f => f.id === formId);
+      if (!form) return;
+
+      document.getElementById('view-custom-title').textContent = form.title;
+      document.getElementById('view-custom-subtitle').textContent = `${form.courseCode} · ${form.facultyName} (${form.semester})`;
+      document.getElementById('view-custom-total-count').textContent = (form.responses || []).length;
+
+      const container = document.getElementById('view-custom-results-container');
+      container.innerHTML = '';
+
+      form.questions.forEach((q, idx) => {
+        const div = document.createElement('div');
+        div.style.cssText = 'background:#f8fafc; border:1px solid var(--border); border-radius:6px; padding:0.85rem;';
+        if (q.type === 'rating') {
+          const scores = (form.responses || []).map(r => r.answers[q.id]).filter(v => v !== undefined);
+          const avg = scores.length > 0 ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1) : '—';
+          div.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+              <div style="font-weight:600; font-size:0.88rem;">${idx + 1}. ${q.text}</div>
+              <div style="font-size:1.15rem; font-weight:700; color:var(--text);">${avg} <small style="font-size:0.75rem; color:var(--text-muted);">/ 5.0</small></div>
+            </div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">${scores.length} ratings received</div>
+          `;
+        } else {
+          const comments = (form.responses || []).map(r => r.answers[q.id]).filter(t => t && t.trim() !== '');
+          let commentsHtml = '';
+          if (comments.length === 0) {
+            commentsHtml = '<div style="font-size:0.8rem; color:var(--text-dim); margin-top:0.4rem;">No written responses submitted yet.</div>';
+          } else {
+            comments.forEach(c => {
+              commentsHtml += `<div style="background:#ffffff; border:1px solid var(--border); border-radius:4px; padding:0.5rem 0.65rem; font-size:0.82rem; margin-top:0.4rem; color:var(--text);">"${c}"</div>`;
+            });
+          }
+          div.innerHTML = `
+            <div style="font-weight:600; font-size:0.88rem; margin-bottom:0.25rem;">${idx + 1}. ${q.text}</div>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.3rem;">${comments.length} written comment${comments.length !== 1 ? 's' : ''} (Strictly Anonymous)</div>
+            ${commentsHtml}
+          `;
+        }
+        container.appendChild(div);
+      });
+
+      document.getElementById('modal-view-custom-responses').classList.add('active');
+    }
+
+    function closeViewCustomResponsesModal() {
+      document.getElementById('modal-view-custom-responses').classList.remove('active');
+    }
+
+    function toggleCustomFormStatus(formId) {
+      const form = state.customForms.find(f => f.id === formId);
+      if (form) {
+        form.isActive = !form.isActive;
+        saveState();
+        renderAll();
+        showToast(`Feedback form "${form.title}" is now ${form.isActive ? 'Open' : 'Closed'}.`);
+      }
+    }
+
+    function deleteCustomForm(formId) {
+      if (confirm('Delete this custom feedback form and its responses?')) {
+        state.customForms = state.customForms.filter(f => f.id !== formId);
+        saveState();
+        renderAll();
+        showToast('Feedback form deleted.');
       }
     }
 

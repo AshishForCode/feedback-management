@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block title %}Fill Feedback Form — {{ form.title }}{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <div>
+    <div class="eyebrow">Student evaluation · Anonymous</div>
+    <h1>{{ form.title }}</h1>
+    <p class="text-secondary mb-0">
+      Course: <strong>{{ form.course_code }} — {{ form.course_name }}</strong> · Instructor: <strong>{{ form.faculty_name }}</strong> ({{ form.semester }})
+    </p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-8">
+    <div class="panel">
+      {% if form.instructions %}
+        <div class="alert alert-light border mb-4">
+          <strong class="d-block text-secondary small mb-1">Instructor Instructions:</strong>
+          <p class="mb-0 text-dark">{{ form.instructions }}</p>
+        </div>
+      {% endif %}
+
+      <div class="alert alert-light border d-flex align-items-center gap-2 mb-4 py-2">
+        <span>🔒</span>
+        <span class="small text-muted"><strong>Strict Anonymity:</strong> Your student account information is never visible to the instructor or attached to your evaluation.</span>
+      </div>
+
+      {% if already_submitted %}
+        <div class="alert alert-success">
+          <h4 class="alert-heading fs-6 fw-bold">Feedback Already Recorded</h4>
+          <p class="mb-0">You have already submitted an anonymous response for this feedback form. Thank you for your feedback!</p>
+        </div>
+        <a href="{{ url_for('student.dashboard') }}" class="btn btn-outline-secondary">← Return to Dashboard</a>
+      {% else %}
+        <form method="post" id="fillForm">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+          <div class="d-flex flex-column gap-4 mb-4">
+            {% for q in questions %}
+              <div class="p-3 border rounded bg-light">
+                <label class="form-label fw-semibold mb-2 d-block">
+                  <span class="text-secondary small d-block">Question {{ loop.index }}</span>
+                  {{ q.question_text }}
+                </label>
+
+                {% if q.question_type == 'rating' %}
+                  <div class="d-flex gap-2 flex-wrap" role="radiogroup" aria-label="{{ q.question_text }}">
+                    {% for star in range(1, 6) %}
+                      <label class="btn btn-outline-secondary px-3 py-2 rating-btn" style="cursor: pointer; min-width: 65px;">
+                        <input type="radio" name="question_{{ q.question_id }}" value="{{ star }}" required class="btn-check" id="q_{{ q.question_id }}_{{ star }}">
+                        <span class="d-block fw-bold">{{ star }} ★</span>
+                        <span class="small text-muted" style="font-size: 0.72rem;">
+                          {% if star == 1 %}Poor{% elif star == 3 %}Good{% elif star == 5 %}Excellent{% endif %}
+                        </span>
+                      </label>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  <textarea name="question_{{ q.question_id }}" class="form-control" rows="3" maxlength="1000" placeholder="Type your constructive comments or feedback here..."></textarea>
+                  <div class="form-text">Maximum 1,000 characters. Optional.</div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Submit Anonymous Feedback</button>
+            <a href="{{ url_for('student.dashboard') }}" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="panel">
+      <h3>Feedback Policy</h3>
+      <p class="text-secondary small">
+        This feedback is collected by your course instructor to improve future lectures, coursework, and assignments.
+      </p>
+      <ul class="text-secondary small ps-3">
+        <li>Responses are submitted directly into the aggregated pool.</li>
+        <li>Faculty only see overall ratings and unlinked text comments.</li>
+        <li>Each enrolled student can respond once.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,13 +1,137 @@
 {% extends 'base.html' %}
-{% block title %}Faculty dashboard{% endblock %}
+{% block title %}Faculty Dashboard{% endblock %}
 {% block content %}
-<div class="page-heading"><div><div class="eyebrow">Faculty portal</div><h1>Feedback overview</h1><p class="text-secondary mb-0">Feedback is anonymous. Student names and account details are not included.</p></div></div>
-<section class="panel"><h2>Your course results</h2>
-  {% if courses %}<div class="table-responsive"><table class="table align-middle"><thead><tr><th>Course</th><th>Semester</th><th>Responses</th><th>Teaching</th><th>Content</th><th>Punctuality</th><th>Overall</th></tr></thead><tbody>
-  {% for course in courses %}<tr><td><strong>{{ course.course_code }}</strong><br>{{ course.course_name }}</td><td>{{ course.semester }}</td><td>{{ course.response_count }}</td><td>{{ course.teaching_average or '—' }}</td><td>{{ course.content_average or '—' }}</td><td>{{ course.punctuality_average or '—' }}</td><td class="score">{{ course.overall_average or '—' }}</td></tr>{% endfor %}
-  </tbody></table></div>{% else %}<p class="text-secondary mb-0">No courses have been assigned to you yet.</p>{% endif %}
+<div class="page-heading d-flex justify-content-between align-items-center flex-wrap gap-3">
+  <div>
+    <div class="eyebrow">Faculty portal</div>
+    <h1>Feedback overview</h1>
+    <p class="text-secondary mb-0">Feedback is strictly anonymous. Student names and account details are never stored or displayed.</p>
+  </div>
+  <div>
+    <a href="{{ url_for('faculty.create_form') }}" class="btn btn-primary">
+      + Create Feedback Form
+    </a>
+  </div>
+</div>
+
+<section class="panel mb-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">My Custom Feedback Forms</h2>
+    <span class="badge text-bg-light border text-secondary">{{ forms|length }} form{{ 's' if forms|length != 1 else '' }}</span>
+  </div>
+  {% if forms %}
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Form Title</th>
+            <th>Course & Semester</th>
+            <th>Questions</th>
+            <th>Responses</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for form in forms %}
+            <tr>
+              <td>
+                <strong>{{ form.title }}</strong>
+                {% if form.instructions %}
+                  <div class="small text-muted">{{ form.instructions|truncate(60) }}</div>
+                {% endif %}
+              </td>
+              <td>{{ form.course_code }} · {{ form.semester }}</td>
+              <td>{{ form.question_count }}</td>
+              <td><span class="badge text-bg-secondary">{{ form.response_count }}</span></td>
+              <td>
+                {% if form.is_active %}
+                  <span class="badge text-bg-success">Active / Open</span>
+                {% else %}
+                  <span class="badge text-bg-secondary">Closed</span>
+                {% endif %}
+              </td>
+              <td>
+                <div class="d-flex gap-2">
+                  <a href="{{ url_for('faculty.view_form', form_id=form.form_id) }}" class="btn btn-sm btn-outline-primary">
+                    View Responses
+                  </a>
+                  <form method="post" action="{{ url_for('faculty.toggle_form', form_id=form.form_id) }}" class="d-inline m-0">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-sm btn-outline-secondary">
+                      {{ 'Close' if form.is_active else 'Open' }}
+                    </button>
+                  </form>
+                  <form method="post" action="{{ url_for('faculty.delete_form', form_id=form.form_id) }}" class="d-inline m-0" onsubmit="return confirm('Delete this feedback form and all its responses?');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                      Delete
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="p-4 border rounded bg-light text-center">
+      <p class="text-secondary mb-3">You haven't created any custom feedback forms yet. Create one to collect specific evaluation from your students.</p>
+      <a href="{{ url_for('faculty.create_form') }}" class="btn btn-sm btn-primary">+ Create Your First Form</a>
+    </div>
+  {% endif %}
 </section>
-<section class="panel"><h2>Comments</h2>
-  {% if comments %}<div class="comment-list">{% for item in comments %}<article class="comment-item"><div class="small text-secondary">{{ item.course_code }} · {{ item.semester }}</div><p class="mb-0">{{ item.comments }}</p></article>{% endfor %}</div>{% else %}<p class="text-secondary mb-0">No written comments yet.</p>{% endif %}
+
+<section class="panel mb-4">
+  <h2>Overall Course Ratings</h2>
+  {% if courses %}
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Course</th>
+            <th>Semester</th>
+            <th>Responses</th>
+            <th>Teaching</th>
+            <th>Content</th>
+            <th>Punctuality</th>
+            <th>Overall</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for course in courses %}
+            <tr>
+              <td><strong>{{ course.course_code }}</strong><br>{{ course.course_name }}</td>
+              <td>{{ course.semester }}</td>
+              <td>{{ course.response_count }}</td>
+              <td>{{ course.teaching_average or '—' }}</td>
+              <td>{{ course.content_average or '—' }}</td>
+              <td>{{ course.punctuality_average or '—' }}</td>
+              <td class="score">{{ course.overall_average or '—' }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="text-secondary mb-0">No courses have been assigned to you yet.</p>
+  {% endif %}
+</section>
+
+<section class="panel">
+  <h2>Anonymous Course Comments</h2>
+  {% if comments %}
+    <div class="comment-list">
+      {% for item in comments %}
+        <article class="comment-item">
+          <div class="small text-secondary">{{ item.course_code }} · {{ item.semester }}</div>
+          <p class="mb-0">{{ item.comments }}</p>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-secondary mb-0">No written comments yet.</p>
+  {% endif %}
 </section>
 {% endblock %}

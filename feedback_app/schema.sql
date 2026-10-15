@@ -90,3 +90,49 @@ INSERT OR IGNORE INTO course_assignments (assignment_id, faculty_id, course_id, 
 INSERT OR IGNORE INTO student_courses (student_id, course_id, semester) VALUES
     (3, 1, '2026-Fall'),
     (3, 2, '2026-Fall');
+
+CREATE TABLE IF NOT EXISTS feedback_forms (
+    form_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    assignment_id INTEGER NOT NULL,
+    faculty_id INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    instructions TEXT NOT NULL DEFAULT '',
+    is_active INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1)),
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY (assignment_id) REFERENCES course_assignments(assignment_id) ON DELETE CASCADE,
+    FOREIGN KEY (faculty_id) REFERENCES faculty(faculty_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS form_questions (
+    question_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    form_id INTEGER NOT NULL,
+    question_text TEXT NOT NULL,
+    question_type TEXT NOT NULL DEFAULT 'rating' CHECK (question_type IN ('rating', 'text')),
+    order_num INTEGER NOT NULL DEFAULT 1,
+    FOREIGN KEY (form_id) REFERENCES feedback_forms(form_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS form_responses (
+    response_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    form_id INTEGER NOT NULL,
+    student_id INTEGER NOT NULL,
+    question_id INTEGER NOT NULL,
+    rating_value INTEGER CHECK (rating_value BETWEEN 1 AND 5),
+    text_value TEXT DEFAULT '',
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY (form_id) REFERENCES feedback_forms(form_id) ON DELETE CASCADE,
+    FOREIGN KEY (student_id) REFERENCES students(student_id) ON DELETE CASCADE,
+    FOREIGN KEY (question_id) REFERENCES form_questions(question_id) ON DELETE CASCADE,
+    UNIQUE (form_id, student_id, question_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_form_responses_form ON form_responses(form_id);
+
+INSERT OR IGNORE INTO feedback_forms (form_id, assignment_id, faculty_id, title, instructions, is_active)
+VALUES (1, 1, 2, 'Mid-Semester Course Feedback', 'Please provide honest anonymous feedback to help improve lecture delivery and lab sessions.', 1);
+
+INSERT OR IGNORE INTO form_questions (question_id, form_id, question_text, question_type, order_num) VALUES
+    (1, 1, 'How clearly does the instructor explain core programming concepts?', 'rating', 1),
+    (2, 1, 'How effective are the practical coding demonstrations and lab sessions?', 'rating', 2),
+    (3, 1, 'What topics or areas would you like more hands-on practice or review on?', 'text', 3);
+

@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% block title %}Create Feedback Form{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <div>
+    <div class="eyebrow">Faculty portal</div>
+    <h1>Create Feedback Form</h1>
+    <p class="text-secondary mb-0">Build a customized anonymous evaluation form for students enrolled in your course.</p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-8">
+    <div class="panel">
+      <form method="post" id="createForm">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold" for="assignment_id">Target Course & Semester</label>
+          <select class="form-select" id="assignment_id" name="assignment_id" required>
+            {% for a in assignments %}
+              <option value="{{ a.assignment_id }}">{{ a.course_code }} — {{ a.course_name }} ({{ a.semester }})</option>
+            {% endfor %}
+          </select>
+          <div class="form-text">Only students enrolled in this course and term will be prompted to fill this form.</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold" for="title">Form Title</label>
+          <input class="form-control" id="title" name="title" type="text" maxlength="150" placeholder="e.g. Mid-Semester Lecture & Lab Evaluation" required autofocus>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-semibold" for="instructions">Instructions / Note to Students (Optional)</label>
+          <textarea class="form-control" id="instructions" name="instructions" rows="2" placeholder="e.g. Please share honest feedback about lecture pace, coding labs, and concepts. Responses are 100% anonymous."></textarea>
+        </div>
+
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+          <label class="form-label fw-semibold mb-0">Questions / Evaluation Criteria</label>
+          <button type="button" class="btn btn-sm btn-outline-primary" onclick="addQuestionRow()">
+            + Add Question
+          </button>
+        </div>
+
+        <div id="questionsContainer" class="d-flex flex-column gap-3 mb-4">
+          <!-- Default Question 1: Rating -->
+          <div class="card p-3 question-row border bg-light">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="fw-semibold small text-secondary q-num-label">Question 1</span>
+              <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 btn-remove-q" onclick="removeQuestionRow(this)">Remove</button>
+            </div>
+            <div class="row g-2">
+              <div class="col-md-8">
+                <input type="text" name="question_text[]" class="form-control" placeholder="e.g. How clearly were complex algorithms and concepts explained?" value="How clearly are core concepts and course material explained?" required>
+              </div>
+              <div class="col-md-4">
+                <select name="question_type[]" class="form-select">
+                  <option value="rating" selected>Rating (1 to 5 Stars)</option>
+                  <option value="text">Written Comment / Text</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Default Question 2: Rating -->
+          <div class="card p-3 question-row border bg-light">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="fw-semibold small text-secondary q-num-label">Question 2</span>
+              <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 btn-remove-q" onclick="removeQuestionRow(this)">Remove</button>
+            </div>
+            <div class="row g-2">
+              <div class="col-md-8">
+                <input type="text" name="question_text[]" class="form-control" placeholder="e.g. How effectively does the instructor answer student doubts?" value="How effective and engaging are the lectures and practical sessions?" required>
+              </div>
+              <div class="col-md-4">
+                <select name="question_type[]" class="form-select">
+                  <option value="rating" selected>Rating (1 to 5 Stars)</option>
+                  <option value="text">Written Comment / Text</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Default Question 3: Text -->
+          <div class="card p-3 question-row border bg-light">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <span class="fw-semibold small text-secondary q-num-label">Question 3</span>
+              <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 btn-remove-q" onclick="removeQuestionRow(this)">Remove</button>
+            </div>
+            <div class="row g-2">
+              <div class="col-md-8">
+                <input type="text" name="question_text[]" class="form-control" placeholder="e.g. Suggestions for topics to cover in more depth?" value="What topics or areas would you like more hands-on practice or review on?" required>
+              </div>
+              <div class="col-md-4">
+                <select name="question_type[]" class="form-select">
+                  <option value="rating">Rating (1 to 5 Stars)</option>
+                  <option value="text" selected>Written Comment / Text</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary">Publish Feedback Form</button>
+          <a href="{{ url_for('faculty.dashboard') }}" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="col-lg-4">
+    <div class="panel">
+      <h3>About Form Creation</h3>
+      <p class="text-secondary small">
+        When you publish this form:
+      </p>
+      <ul class="text-secondary small ps-3">
+        <li>Enrolled students in the selected course will immediately see this form on their dashboard.</li>
+        <li>Students can submit their evaluation anonymously once.</li>
+        <li>You will be able to review calculated averages and read responses without any student identities attached.</li>
+        <li>You can close or reopen responses at any point.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+function updateQuestionNumbers() {
+  const rows = document.querySelectorAll('.question-row');
+  rows.forEach((row, index) => {
+    row.querySelector('.q-num-label').textContent = 'Question ' + (index + 1);
+  });
+  const removeButtons = document.querySelectorAll('.btn-remove-q');
+  removeButtons.forEach(btn => {
+    btn.disabled = rows.length <= 1;
+  });
+}
+
+function addQuestionRow() {
+  const container = document.getElementById('questionsContainer');
+  const count = container.querySelectorAll('.question-row').length + 1;
+  const card = document.createElement('div');
+  card.className = 'card p-3 question-row border bg-light';
+  card.innerHTML = `
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <span class="fw-semibold small text-secondary q-num-label">Question ${count}</span>
+      <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 btn-remove-q" onclick="removeQuestionRow(this)">Remove</button>
+    </div>
+    <div class="row g-2">
+      <div class="col-md-8">
+        <input type="text" name="question_text[]" class="form-control" placeholder="Enter question or feedback prompt..." required>
+      </div>
+      <div class="col-md-4">
+        <select name="question_type[]" class="form-select">
+          <option value="rating" selected>Rating (1 to 5 Stars)</option>
+          <option value="text">Written Comment / Text</option>
+        </select>
+      </div>
+    </div>
+  `;
+  container.appendChild(card);
+  updateQuestionNumbers();
+}
+
+function removeQuestionRow(btn) {
+  const container = document.getElementById('questionsContainer');
+  if (container.querySelectorAll('.question-row').length > 1) {
+    btn.closest('.question-row').remove();
+    updateQuestionNumbers();
+  }
+}
+
+document.addEventListener('DOMContentLoaded', updateQuestionNumbers);
+</script>
+{% endblock %}

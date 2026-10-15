@@ -168,6 +168,81 @@ class FeedbackApplicationTests(unittest.TestCase):
         self.assertEqual(self.client.get("/auth/register").status_code, 200)
         self.assertEqual(self.client.get("/static/style.css").status_code, 200)
 
+    def test_faculty_can_create_custom_form_and_student_can_fill_it(self):
+        # 1. Faculty logs in and creates a custom feedback form
+        self.login("faculty@feedback.local")
+        create_page = self.client.get("/faculty/forms/create")
+        self.assertEqual(create_page.status_code, 200)
+
+        post_res = self.client.post("/faculty/forms/create", data={
+            "assignment_id": "1",
+            "title": "Unit 2 Practical Feedback",
+            "instructions": "Be honest about lab pace and explanations.",
+            "question_text[]": ["Clarity of recursion demo", "Suggestions for homework"],
+            "question_type[]": ["rating", "text"],
+        })
+        self.assertEqual(post_res.status_code, 302)
+
+        with self.app.app_context():
+            from feedback_app.db import get_db
+            db = get_db()
+            form = db.execute("SELECT * FROM feedback_forms WHERE title = 'Unit 2 Practical Feedback'").fetchone()
+            self.assertIsNotNone(form)
+            form_id = form["form_id"]
+            questions = db.execute("SELECT * FROM form_questions WHERE form_id = ? ORDER BY order_num", (form_id,)).fetchall()
+            self.assertEqual(len(questions), 2)
+            q1_id = questions[0]["question_id"]
+            q2_id = questions[1]["question_id"]
+
+        self.client.post("/auth/logout")
+
+        # 2. Student logs in and fills the custom feedback form
+        self.login("student@feedback.local")
+        student_dash = self.client.get("/student/dashboard")
+        self.assertEqual(student_dash.status_code, 200)
+        self.assertIn(b"Unit 2 Practical Feedback", student_dash.data)
+
+        fill_page = self.client.get(f"/student/forms/{form_id}")
+        self.assertEqual(fill_page.status_code, 200)
+        self.assertIn(b"Clarity of recursion demo", fill_page.data)
+
+        submit_res = self.client.post(f"/student/forms/{form_id}", data={
+            f"question_{q1_id}": "5",
+            f"question_{q2_id}": "More practice problems on trees please.",
+        })
+        self.assertEqual(submit_res.status_code, 302)
+
+        # Duplicate submission is blocked
+        dup_res = self.client.post(f"/student/forms/{form_id}", data={
+            f"question_{q1_id}": "4",
+            f"question_{q2_id}": "Duplicate comment",
+        })
+        self.assertEqual(dup_res.status_code, 302)
+
+        with self.app.app_context():
+            from feedback_app.db import get_db
+            resp_count = get_db().execute("SELECT COUNT(DISTINCT student_id) FROM form_responses WHERE form_id = ?", (form_id,)).fetchone()[0]
+            self.assertEqual(resp_count, 1)
+
+        self.client.post("/auth/logout")
+
+        # 3. Faculty logs back in to view anonymous response analytics
+        self.login("faculty@feedback.local")
+        view_res = self.client.get(f"/faculty/forms/{form_id}")
+        self.assertEqual(view_res.status_code, 200)
+        self.assertIn(b"More practice problems on trees please.", view_res.data)
+        # Verify student identity is not exposed
+        self.assertNotIn(b"Sam Student", view_res.data)
+        self.assertNotIn(b"STU-001", view_res.data)
+
+        # Toggle form closed
+        toggle_res = self.client.post(f"/faculty/forms/{form_id}/toggle")
+        self.assertEqual(toggle_res.status_code, 302)
+        with self.app.app_context():
+            from feedback_app.db import get_db
+            is_active = get_db().execute("SELECT is_active FROM feedback_forms WHERE form_id = ?", (form_id,)).fetchone()[0]
+            self.assertEqual(is_active, 0)
+
 
 if __name__ == "__main__":
     unittest.main()
