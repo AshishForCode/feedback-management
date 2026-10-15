@@ -9,22 +9,6 @@
       <p>Authentication is required to access the feedback management system</p>
     </div>
 
-    <!-- Minimal Demo Credentials Helper -->
-    <div class="demo-box">
-      <div class="demo-box-label">Quick demo autofill</div>
-      <div class="demo-chips">
-        <button type="button" class="demo-chip" onclick="fillDemo('student@feedback.local', 'DemoPass123!')">
-          <span class="role-badge">Student</span> Sam Student
-        </button>
-        <button type="button" class="demo-chip" onclick="fillDemo('faculty@feedback.local', 'DemoPass123!')">
-          <span class="role-badge">Faculty</span> Dr. Ada Faculty
-        </button>
-        <button type="button" class="demo-chip" onclick="fillDemo('admin@feedback.local', 'DemoPass123!')">
-          <span class="role-badge">Admin</span> Administrator
-        </button>
-      </div>
-    </div>
-
     <form method="post" id="loginForm">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
@@ -58,14 +42,6 @@
 </div>
 
 <script>
-function fillDemo(email, password) {
-  const emailInput = document.getElementById('email');
-  const passwordInput = document.getElementById('password');
-  emailInput.value = email;
-  passwordInput.value = password;
-  emailInput.focus();
-}
-
 function togglePasswordVisibility(fieldId, btn) {
   const field = document.getElementById(fieldId);
   const textSpan = btn.querySelector('.pw-eye-text');

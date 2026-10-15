@@ -981,11 +981,14 @@
     <!-- Simulator Box -->
     <div id="tab-demo" class="simulator-box">
       <div class="sim-header">
-        <div class="role-switcher">
+        <div class="role-switcher" id="portal-role-switcher" style="display:none;">
           <span style="font-size:0.75rem; color:var(--text-dim); text-transform:uppercase; font-weight:700; padding:0 0.4rem;">Portal:</span>
           <button class="role-btn" id="btn-role-student" onclick="handleRoleClick('student')">🎓 Student</button>
           <button class="role-btn" id="btn-role-faculty" onclick="handleRoleClick('faculty')">👨‍🏫 Faculty</button>
           <button class="role-btn" id="btn-role-admin" onclick="handleRoleClick('admin')">🛡️ Admin</button>
+        </div>
+        <div id="auth-locked-indicator" style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; font-weight:600; color:var(--text-muted);">
+          <span>🔐 Campus Feedback System · Sign In to Enter</span>
         </div>
         <div class="sim-meta" id="sim-meta-bar">
           <div id="sim-user-display" style="display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
@@ -993,7 +996,7 @@
               <span id="tag-role-pill" class="role-badge-pill" style="background:#e2e8f0; color:#475569;">LOCKED</span>
               <span id="tag-user-text">Not logged in (Sign in required)</span>
             </span>
-            <button class="btn-auth-switch" id="btn-switch-account" onclick="openAuthModal()" title="Sign in or register">
+            <button class="btn-auth-switch" id="btn-switch-account" onclick="openAuthModal()" style="display:none;" title="Sign in or register">
               <span>🔐 Sign In / Register</span>
             </button>
             <button class="btn-signout" id="btn-sim-signout" onclick="logoutSim()" style="display:none;" title="Log out of the current session">
@@ -1017,26 +1020,6 @@
               <div style="font-size:2.2rem; margin-bottom:0.4rem;">🔐</div>
               <h3>Campus Authentication Portal</h3>
               <p>Sign in to access your role-based evaluations and institutional reports.</p>
-            </div>
-
-            <!-- Quick Demo Credentials -->
-            <div class="demo-quick-bar">
-              <div class="demo-quick-title">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                <span>1-Click Demo Quick Sign-In</span>
-              </div>
-              <div class="demo-quick-chips">
-                <button type="button" class="demo-quick-chip" onclick="quickDemoLogin('student')">
-                  <span class="role-badge-pill role-badge-student">Student</span> John Doe
-                </button>
-                <button type="button" class="demo-quick-chip" onclick="quickDemoLogin('faculty')">
-                  <span class="role-badge-pill role-badge-faculty">Faculty</span> Dr. Alan Turing
-                </button>
-                <button type="button" class="demo-quick-chip" onclick="quickDemoLogin('admin')">
-                  <span class="role-badge-pill role-badge-admin">Admin</span> Administrator
-                </button>
-              </div>
-              <div style="font-size:0.75rem; color:var(--text-dim); margin-top:0.3rem;">Default credentials password: <code>DemoPass123!</code></div>
             </div>
 
             <!-- Tabs: Login vs Register -->
@@ -1069,7 +1052,6 @@
                   <input type="checkbox" id="sim-remember-me" checked>
                   <span>Remember session</span>
                 </label>
-                <span style="color:#34d399; cursor:pointer;" onclick="quickDemoLogin('student')">Autofill Demo</span>
               </div>
 
               <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:0.85rem;">
@@ -1754,9 +1736,8 @@ python run.py</div>
         try {
           const parsed = JSON.parse(saved);
           if (!parsed.users) parsed.users = JSON.parse(JSON.stringify(INITIAL_STATE.users));
-          if (!parsed.currentUser || !parsed.users.some(u => u.id === parsed.currentUser.id)) {
-            parsed.currentUser = null;
-          }
+          // Security policy: Always start with login/register; do not land directly on dashboard
+          parsed.currentUser = null;
           if (!parsed.customForms) parsed.customForms = JSON.parse(JSON.stringify(INITIAL_STATE.customForms));
           return parsed;
         } catch(e) {}
@@ -1800,25 +1781,34 @@ python run.py</div>
       const tagUserText = document.getElementById('tag-user-text');
       const btnLogout = document.getElementById('btn-sim-signout');
       const btnSwitch = document.getElementById('btn-switch-account');
+      const roleSwitcher = document.getElementById('portal-role-switcher');
+      const authIndicator = document.getElementById('auth-locked-indicator');
 
       if (user) {
+        if (roleSwitcher) roleSwitcher.style.display = 'flex';
+        if (authIndicator) authIndicator.style.display = 'none';
         tagRolePill.textContent = user.role.toUpperCase();
         tagRolePill.className = `role-badge-pill role-badge-${user.role}`;
         tagUserText.textContent = `${user.email} (${user.fullName})`;
         btnLogout.style.display = 'inline-flex';
-        btnSwitch.innerHTML = '<span>⇄ Switch User</span>';
+        if (btnSwitch) {
+          btnSwitch.style.display = 'inline-flex';
+          btnSwitch.innerHTML = '<span>⇄ Switch Account</span>';
+        }
         
         document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
         const activeBtn = document.getElementById('btn-role-' + user.role);
         if (activeBtn) activeBtn.classList.add('active');
       } else {
+        if (roleSwitcher) roleSwitcher.style.display = 'none';
+        if (authIndicator) authIndicator.style.display = 'flex';
         tagRolePill.textContent = 'LOCKED';
         tagRolePill.className = 'role-badge-pill';
         tagRolePill.style.background = '#e2e8f0';
         tagRolePill.style.color = '#475569';
         tagUserText.textContent = 'Not logged in (Sign in required)';
         btnLogout.style.display = 'none';
-        btnSwitch.innerHTML = '<span>🔐 Sign In / Register</span>';
+        if (btnSwitch) btnSwitch.style.display = 'none';
         document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
       }
     }
@@ -1853,24 +1843,25 @@ python run.py</div>
       // Role Mismatch -> Trigger RBAC 403 modal
       pendingRbacRole = targetRole;
       const roleLabels = {
-        student: 'Student (John Doe)',
-        faculty: 'Faculty (Dr. Alan Turing)',
-        admin: 'Admin (System Administrator)'
+        student: 'Student account',
+        faculty: 'Faculty account',
+        admin: 'Administrator account'
       };
       document.getElementById('rbac-modal-text').innerHTML = `
         You are currently signed in as <strong>${state.currentUser.fullName}</strong> (${state.currentUser.role.toUpperCase()}).<br><br>
         Access to the <strong>${targetRole.toUpperCase()}</strong> portal is restricted by Flask's <code>@role_required('${targetRole}')</code> decorator.<br>
         Please switch to an account with the <code>${targetRole}</code> role to access this area.
       `;
-      document.getElementById('rbac-switch-btn-text').textContent = `Switch to ${roleLabels[targetRole]}`;
+      document.getElementById('rbac-switch-btn-text').textContent = `Sign in with ${roleLabels[targetRole] || targetRole}`;
       document.getElementById('rbac-modal').classList.add('active');
     }
 
     function rbacSwitchRole() {
-      if (pendingRbacRole) {
-        const role = pendingRbacRole;
-        closeRbacModal();
-        quickDemoLogin(role);
+      const role = pendingRbacRole;
+      closeRbacModal();
+      logoutSim();
+      if (role) {
+        showAuthAlert(`Please sign in with your ${role} credentials.`);
       }
     }
 
@@ -1916,17 +1907,6 @@ python run.py</div>
       }
     }
 
-    function quickDemoLogin(role) {
-      const user = state.users.find(u => u.role === role);
-      if (!user) return;
-      state.currentUser = user;
-      saveState();
-      updateAuthHeaderUI();
-      setRole(role);
-      showToast(`Signed in as ${user.fullName} (${user.role.toUpperCase()})`);
-      hideAuthAlert();
-    }
-
     function handleSimLogin(e) {
       e.preventDefault();
       const email = document.getElementById('sim-input-email').value.trim().toLowerCase();
@@ -1934,7 +1914,7 @@ python run.py</div>
 
       const user = state.users.find(u => u.email.toLowerCase() === email);
       if (!user || user.password !== password) {
-        showAuthAlert('Invalid email or password. Hint: Default demo password is "DemoPass123!".');
+        showAuthAlert('Invalid email or password.');
         return;
       }
 
@@ -2635,14 +2615,11 @@ python run.py</div>
       });
     }
 
-    // Init Page
+    // Init Page - Always start on login / register page; do not land directly on dashboard
     window.addEventListener('DOMContentLoaded', () => {
+      state.currentUser = null;
       updateAuthHeaderUI();
-      if (state.currentUser) {
-        setRole(state.currentUser.role);
-      } else {
-        openAuthModal();
-      }
+      openAuthModal();
       renderAll();
       initViva();
     });

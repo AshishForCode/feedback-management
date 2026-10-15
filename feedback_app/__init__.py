@@ -58,10 +58,6 @@ def create_app(test_config=None):
     @app.get("/")
     def index():
         from flask import redirect, url_for
-        from flask_login import current_user
-
-        if current_user.is_authenticated:
-            return redirect(url_for(f"{current_user.role}.dashboard"))
         return redirect(url_for("auth.login"))
 
     # Flask-Login is initialized here after blueprint imports to keep auth setup centralized.
