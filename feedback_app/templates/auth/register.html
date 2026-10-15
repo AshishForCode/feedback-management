@@ -2,62 +2,53 @@
 {% block title %}Register{% endblock %}
 {% block content %}
 <div class="auth-wrap">
-  <div class="eyebrow">Student account</div>
-  <div class="panel mt-2 shadow-sm">
-    <div class="d-flex align-items-center justify-content-between mb-3">
-      <div>
-        <h1 class="h2 mb-1">Create your account</h1>
-        <p class="text-secondary mb-0">Self-registration is available for enrolled students.</p>
-      </div>
-      <span class="fs-1" aria-hidden="true">🎓</span>
-    </div>
-
-    <div class="alert alert-info py-2 small mb-4">
-      Faculty and administrative accounts are provisioned by the department administrator.
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="eyebrow">Student Registration</div>
+      <h1>Create account</h1>
+      <p>Register as an enrolled student to access feedback forms</p>
     </div>
 
     <form method="post">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
       <div class="mb-3">
         <label class="form-label" for="full_name">Full name</label>
-        <div class="input-group">
-          <span class="input-group-text bg-light text-muted">👤</span>
-          <input class="form-control" id="full_name" name="full_name" maxlength="100" placeholder="e.g. Alex Morgan" required>
-        </div>
+        <input class="form-control" id="full_name" name="full_name" maxlength="100" placeholder="e.g. Taylor Smith" required autofocus>
       </div>
+
       <div class="mb-3">
-        <label class="form-label" for="email">College email address</label>
-        <div class="input-group">
-          <span class="input-group-text bg-light text-muted">✉️</span>
-          <input class="form-control" id="email" name="email" type="email" maxlength="254" autocomplete="email" placeholder="student@feedback.local" required>
-        </div>
+        <label class="form-label" for="email">College email</label>
+        <input class="form-control" id="email" name="email" type="email" maxlength="254" autocomplete="email" placeholder="student@feedback.local" required>
       </div>
+
       <div class="row">
         <div class="col-md-6 mb-3">
           <label class="form-label" for="student_number">Student ID / Roll no.</label>
-          <input class="form-control" id="student_number" name="student_number" maxlength="30" placeholder="STU-102" required>
+          <input class="form-control" id="student_number" name="student_number" maxlength="30" placeholder="STU-001" required>
         </div>
         <div class="col-md-6 mb-3">
           <label class="form-label" for="department">Department</label>
           <input class="form-control" id="department" name="department" maxlength="80" placeholder="Computer Science" required>
         </div>
       </div>
+
       <div class="mb-4">
         <label class="form-label" for="password">Password</label>
         <div class="input-group">
-          <span class="input-group-text bg-light text-muted">🔑</span>
           <input class="form-control" id="password" name="password" type="password" minlength="8" maxlength="128" autocomplete="new-password" placeholder="At least 8 characters" required>
-          <button class="btn btn-outline-secondary btn-toggle-pw" type="button" onclick="togglePasswordVisibility('password', this)" title="Show or hide password">
-            <span class="pw-eye-icon">👁️</span>
+          <button class="btn btn-toggle-pw" type="button" onclick="togglePasswordVisibility('password', this)" aria-label="Toggle password visibility">
+            <span class="pw-eye-text" style="font-size:0.75rem;">Show</span>
           </button>
         </div>
-        <div class="form-text">Must be at least 8 characters. Stored securely with PBKDF2/Scrypt hash.</div>
+        <div class="form-text">Minimum 8 characters. Stored securely with PBKDF2/Scrypt.</div>
       </div>
-      <button class="btn btn-primary w-100 py-2 fw-semibold" type="submit">Complete Registration</button>
+
+      <button class="btn btn-primary w-100" type="submit">Create account</button>
     </form>
 
-    <div class="mt-4 pt-3 border-top text-center text-secondary small">
-      Already registered? <a href="{{ url_for('auth.login') }}" class="fw-semibold text-decoration-none">Sign in here</a>
+    <div class="mt-4 pt-3 border-top text-center text-muted small">
+      Already have an account? <a href="{{ url_for('auth.login') }}" class="text-dark fw-semibold text-decoration-none">Sign in</a>
     </div>
   </div>
 </div>
@@ -65,15 +56,13 @@
 <script>
 function togglePasswordVisibility(fieldId, btn) {
   const field = document.getElementById(fieldId);
-  const icon = btn.querySelector('.pw-eye-icon');
+  const textSpan = btn.querySelector('.pw-eye-text');
   if (field.type === 'password') {
     field.type = 'text';
-    icon.textContent = '🙈';
-    btn.setAttribute('aria-label', 'Hide password');
+    textSpan.textContent = 'Hide';
   } else {
     field.type = 'password';
-    icon.textContent = '👁️';
-    btn.setAttribute('aria-label', 'Show password');
+    textSpan.textContent = 'Show';
   }
 }
 </script>

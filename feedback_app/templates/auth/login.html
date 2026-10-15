@@ -1,67 +1,58 @@
 {% extends 'base.html' %}
-{% block title %}Log in{% endblock %}
+{% block title %}Sign in{% endblock %}
 {% block content %}
 <div class="auth-wrap">
-  <div class="eyebrow">Student Feedback Management System</div>
-  <div class="panel mt-2 shadow-sm">
-    <div class="d-flex align-items-center justify-content-between mb-3">
-      <div>
-        <h1 class="h2 mb-1">Welcome back</h1>
-        <p class="text-secondary mb-0">Sign in to your campus account</p>
-      </div>
-      <span class="fs-1" aria-hidden="true">🔐</span>
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="eyebrow">Student Feedback System</div>
+      <h1>Sign in</h1>
+      <p>Enter your campus account credentials</p>
     </div>
 
-    <!-- Quick Demo Logins -->
-    <div class="demo-login-box mb-4">
-      <div class="demo-login-title">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-        Quick Demo Sign-In:
-      </div>
+    <!-- Minimal Demo Credentials Helper -->
+    <div class="demo-box">
+      <div class="demo-box-label">Quick demo autofill</div>
       <div class="demo-chips">
-        <button type="button" class="btn btn-sm demo-chip" onclick="fillDemo('student@feedback.local', 'DemoPass123!')">
-          <span class="role-badge role-student">Student</span> Sam Student
+        <button type="button" class="demo-chip" onclick="fillDemo('student@feedback.local', 'DemoPass123!')">
+          <span class="role-badge">Student</span> Sam Student
         </button>
-        <button type="button" class="btn btn-sm demo-chip" onclick="fillDemo('faculty@feedback.local', 'DemoPass123!')">
-          <span class="role-badge role-faculty">Faculty</span> Dr. Ada Faculty
+        <button type="button" class="demo-chip" onclick="fillDemo('faculty@feedback.local', 'DemoPass123!')">
+          <span class="role-badge">Faculty</span> Dr. Ada Faculty
         </button>
-        <button type="button" class="btn btn-sm demo-chip" onclick="fillDemo('admin@feedback.local', 'DemoPass123!')">
-          <span class="role-badge role-admin">Admin</span> Administrator
+        <button type="button" class="demo-chip" onclick="fillDemo('admin@feedback.local', 'DemoPass123!')">
+          <span class="role-badge">Admin</span> Administrator
         </button>
       </div>
-      <div class="demo-login-hint">Click any role chip above to auto-fill credentials (Default password: <code>DemoPass123!</code>)</div>
     </div>
 
     <form method="post" id="loginForm">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
       <div class="mb-3">
-        <label class="form-label" for="email">Email address</label>
-        <div class="input-group">
-          <span class="input-group-text bg-light text-muted">✉️</span>
-          <input class="form-control" id="email" name="email" type="email" maxlength="254" autocomplete="username" placeholder="name@feedback.local" required>
-        </div>
+        <label class="form-label" for="email">Email</label>
+        <input class="form-control" id="email" name="email" type="email" maxlength="254" autocomplete="username" placeholder="name@feedback.local" required autofocus>
       </div>
+
       <div class="mb-3">
-        <div class="d-flex justify-content-between">
-          <label class="form-label" for="password">Password</label>
-        </div>
+        <label class="form-label" for="password">Password</label>
         <div class="input-group">
-          <span class="input-group-text bg-light text-muted">🔑</span>
-          <input class="form-control" id="password" name="password" type="password" autocomplete="current-password" placeholder="••••••••" required>
-          <button class="btn btn-outline-secondary btn-toggle-pw" type="button" id="togglePasswordBtn" onclick="togglePasswordVisibility('password', this)" title="Show or hide password">
-            <span class="pw-eye-icon">👁️</span>
+          <input class="form-control" id="password" name="password" type="password" autocomplete="current-password" placeholder="Password" required>
+          <button class="btn btn-toggle-pw" type="button" onclick="togglePasswordVisibility('password', this)" aria-label="Toggle password visibility">
+            <span class="pw-eye-text" style="font-size:0.75rem;">Show</span>
           </button>
         </div>
       </div>
-      <div class="mb-3 form-check d-flex align-items-center">
-        <input type="checkbox" class="form-check-input me-2 mt-0" id="remember" name="remember" value="1">
-        <label class="form-check-label text-secondary small user-select-none" for="remember">Remember me on this browser</label>
+
+      <div class="mb-4 form-check">
+        <input type="checkbox" class="form-check-input" id="remember" name="remember" value="1">
+        <label class="form-check-label text-muted small" for="remember">Keep me signed in</label>
       </div>
-      <button class="btn btn-primary w-100 py-2 fw-semibold" type="submit">Sign in to Account</button>
+
+      <button class="btn btn-primary w-100" type="submit">Sign in</button>
     </form>
 
-    <div class="mt-4 pt-3 border-top text-center text-secondary small">
-      New student without an account? <a href="{{ url_for('auth.register') }}" class="fw-semibold text-decoration-none">Register here</a>
+    <div class="mt-4 pt-3 border-top text-center text-muted small">
+      Don't have an account? <a href="{{ url_for('auth.register') }}" class="text-dark fw-semibold text-decoration-none">Register as a student</a>
     </div>
   </div>
 </div>
@@ -77,15 +68,13 @@ function fillDemo(email, password) {
 
 function togglePasswordVisibility(fieldId, btn) {
   const field = document.getElementById(fieldId);
-  const icon = btn.querySelector('.pw-eye-icon');
+  const textSpan = btn.querySelector('.pw-eye-text');
   if (field.type === 'password') {
     field.type = 'text';
-    icon.textContent = '🙈';
-    btn.setAttribute('aria-label', 'Hide password');
+    textSpan.textContent = 'Hide';
   } else {
     field.type = 'password';
-    icon.textContent = '👁️';
-    btn.setAttribute('aria-label', 'Show password');
+    textSpan.textContent = 'Show';
   }
 }
 </script>
