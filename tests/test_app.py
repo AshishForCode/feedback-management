@@ -142,6 +142,32 @@ class FeedbackApplicationTests(unittest.TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertIn("/admin/dashboard", response.headers["Location"])
 
+    def test_unauthenticated_access_redirects_to_login(self):
+        # Visiting root / redirects to /auth/login
+        res_root = self.client.get("/")
+        self.assertEqual(res_root.status_code, 302)
+        self.assertIn("/auth/login", res_root.headers["Location"])
+
+        # Direct access to protected student page redirects to /auth/login
+        res_student = self.client.get("/student/dashboard")
+        self.assertEqual(res_student.status_code, 302)
+        self.assertIn("/auth/login", res_student.headers["Location"])
+
+        # Direct access to faculty page redirects to /auth/login
+        res_fac = self.client.get("/faculty/dashboard")
+        self.assertEqual(res_fac.status_code, 302)
+        self.assertIn("/auth/login", res_fac.headers["Location"])
+
+        # Direct access to admin page redirects to /auth/login
+        res_adm = self.client.get("/admin/dashboard")
+        self.assertEqual(res_adm.status_code, 302)
+        self.assertIn("/auth/login", res_adm.headers["Location"])
+
+        # Public auth pages and static assets remain accessible
+        self.assertEqual(self.client.get("/auth/login").status_code, 200)
+        self.assertEqual(self.client.get("/auth/register").status_code, 200)
+        self.assertEqual(self.client.get("/static/style.css").status_code, 200)
+
 
 if __name__ == "__main__":
     unittest.main()

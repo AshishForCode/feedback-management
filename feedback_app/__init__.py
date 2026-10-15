@@ -33,6 +33,28 @@ def create_app(test_config=None):
     app.register_blueprint(faculty.bp)
     app.register_blueprint(admin.bp)
 
+    @app.before_request
+    def enforce_login_requirement():
+        from flask import flash, redirect, request, url_for
+        from flask_login import current_user
+
+        if request.endpoint is None:
+            return None
+
+        public_endpoints = {
+            "auth.login",
+            "auth.register",
+            "auth.logout",
+            "static",
+        }
+
+        if request.endpoint not in public_endpoints:
+            if not current_user.is_authenticated:
+                if request.endpoint != "index":
+                    flash("Please log in first to access the system.", "warning")
+                next_url = request.url if (request.method == "GET" and request.endpoint != "index") else None
+                return redirect(url_for("auth.login", next=next_url))
+
     @app.get("/")
     def index():
         from flask import redirect, url_for
@@ -47,6 +69,7 @@ def create_app(test_config=None):
 
     login_manager = LoginManager()
     login_manager.login_view = "auth.login"
+    login_manager.login_message = "Please sign in to access the system."
     login_manager.login_message_category = "warning"
     login_manager.init_app(app)
 

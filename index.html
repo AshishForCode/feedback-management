@@ -983,20 +983,20 @@
       <div class="sim-header">
         <div class="role-switcher">
           <span style="font-size:0.75rem; color:var(--text-dim); text-transform:uppercase; font-weight:700; padding:0 0.4rem;">Portal:</span>
-          <button class="role-btn active" id="btn-role-student" onclick="handleRoleClick('student')">🎓 Student</button>
+          <button class="role-btn" id="btn-role-student" onclick="handleRoleClick('student')">🎓 Student</button>
           <button class="role-btn" id="btn-role-faculty" onclick="handleRoleClick('faculty')">👨‍🏫 Faculty</button>
           <button class="role-btn" id="btn-role-admin" onclick="handleRoleClick('admin')">🛡️ Admin</button>
         </div>
         <div class="sim-meta" id="sim-meta-bar">
           <div id="sim-user-display" style="display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
             <span class="sim-user-tag" id="current-user-tag">
-              <span id="tag-role-pill" class="role-badge-pill role-badge-student">Student</span>
-              <span id="tag-user-text">student@feedback.local (John Doe)</span>
+              <span id="tag-role-pill" class="role-badge-pill" style="background:#e2e8f0; color:#475569;">LOCKED</span>
+              <span id="tag-user-text">Not logged in (Sign in required)</span>
             </span>
-            <button class="btn-auth-switch" id="btn-switch-account" onclick="openAuthModal()" title="Switch user account or sign in">
-              <span>⇄ Switch User</span>
+            <button class="btn-auth-switch" id="btn-switch-account" onclick="openAuthModal()" title="Sign in or register">
+              <span>🔐 Sign In / Register</span>
             </button>
-            <button class="btn-signout" id="btn-sim-signout" onclick="logoutSim()" title="Log out of the current session">
+            <button class="btn-signout" id="btn-sim-signout" onclick="logoutSim()" style="display:none;" title="Log out of the current session">
               <span>Sign Out</span>
             </button>
           </div>
@@ -1007,9 +1007,13 @@
       <div class="sim-body">
         
         <!-- AUTH VIEW (When signed out or switching user) -->
-        <div id="view-auth" class="view-container">
+        <div id="view-auth" class="view-container active">
           <div class="auth-portal-card">
             <div class="auth-portal-header">
+              <div class="badge-pill" style="margin: 0 auto 0.85rem auto; background:#f1f5f9; color:#0f172a; border-color:#cbd5e1;">
+                <span class="status-dot"></span>
+                <span>Security Gate: Please Sign In to Enter</span>
+              </div>
               <div style="font-size:2.2rem; margin-bottom:0.4rem;">🔐</div>
               <h3>Campus Authentication Portal</h3>
               <p>Sign in to access your role-based evaluations and institutional reports.</p>
@@ -1121,7 +1125,7 @@
         </div>
 
         <!-- STUDENT VIEW -->
-        <div id="view-student" class="view-container active">
+        <div id="view-student" class="view-container">
           <div class="banner-card">
             <div>
               <h3>Welcome, John Doe (STU2024001)</h3>
@@ -1474,14 +1478,7 @@ python run.py</div>
           department: 'Computer Science'
         }
       ],
-      currentUser: {
-        id: 3,
-        email: 'student@feedback.local',
-        fullName: 'John Doe',
-        role: 'student',
-        studentNumber: 'STU2024001',
-        department: 'Computer Science'
-      },
+      currentUser: null,
       courses: [
         { id: 1, code: 'CS101', title: 'Introduction to Computer Science', faculty: 'Dr. Alan Turing', semester: '2026-Fall', credits: 4 },
         { id: 2, code: 'CS201', title: 'Data Structures & Algorithms', faculty: 'Prof. Ada Lovelace', semester: '2026-Fall', credits: 4 },
@@ -1581,7 +1578,7 @@ python run.py</div>
 
     // Local state management
     let state = loadState();
-    let currentRole = state.currentUser ? state.currentUser.role : 'student';
+    let currentRole = state.currentUser ? state.currentUser.role : null;
     let currentRatings = { content: 5, teaching: 5, overall: 5 };
     let pendingRbacRole = null;
 
@@ -1591,7 +1588,9 @@ python run.py</div>
         try {
           const parsed = JSON.parse(saved);
           if (!parsed.users) parsed.users = JSON.parse(JSON.stringify(INITIAL_STATE.users));
-          if (parsed.currentUser === undefined) parsed.currentUser = JSON.parse(JSON.stringify(INITIAL_STATE.currentUser));
+          if (!parsed.currentUser || !parsed.users.some(u => u.id === parsed.currentUser.id)) {
+            parsed.currentUser = null;
+          }
           return parsed;
         } catch(e) {}
       }
@@ -1646,11 +1645,11 @@ python run.py</div>
         const activeBtn = document.getElementById('btn-role-' + user.role);
         if (activeBtn) activeBtn.classList.add('active');
       } else {
-        tagRolePill.textContent = 'GUEST';
+        tagRolePill.textContent = 'LOCKED';
         tagRolePill.className = 'role-badge-pill';
-        tagRolePill.style.background = 'rgba(255,255,255,0.1)';
-        tagRolePill.style.color = '#9ca3af';
-        tagUserText.textContent = 'Not signed in';
+        tagRolePill.style.background = '#e2e8f0';
+        tagRolePill.style.color = '#475569';
+        tagUserText.textContent = 'Not logged in (Sign in required)';
         btnLogout.style.display = 'none';
         btnSwitch.innerHTML = '<span>🔐 Sign In / Register</span>';
         document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
@@ -1658,6 +1657,10 @@ python run.py</div>
     }
 
     function setRole(role) {
+      if (!state.currentUser) {
+        openAuthModal();
+        return;
+      }
       currentRole = role;
       document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
       const btn = document.getElementById('btn-role-' + role);
@@ -1672,7 +1675,8 @@ python run.py</div>
 
     function handleRoleClick(targetRole) {
       if (!state.currentUser) {
-        quickDemoLogin(targetRole);
+        showToast('Login required: Please sign in or register to enter the webpage.');
+        openAuthModal();
         return;
       }
       if (state.currentUser.role === targetRole) {
